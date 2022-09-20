@@ -1,1 +1,1 @@
-# document-normalizer-javascript-samples
+# Dynamsoft Document Normalizer samples for the web

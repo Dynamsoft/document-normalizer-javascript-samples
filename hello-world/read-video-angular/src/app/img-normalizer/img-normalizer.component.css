@@ -1,0 +1,13 @@
+.ImgParser {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+  border: 1px solid black;
+  margin-bottom: 10px;
+}
+.img-normalize-result {
+  width: 100%;
+  height: 100%;
+}

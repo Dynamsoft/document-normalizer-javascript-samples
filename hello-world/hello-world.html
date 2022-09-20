@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quickly recognize labels with Dynamsoft Label Recognizer from a live camera stream.">
+    <meta name="keywords" content="camera based document detecting">
+    <title>Dynamsoft Document Normalizer Sample - Hello World (detecting via Camera)</title>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.0.1/dist/dce.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/shen-dynamsoft-document-normalizer@0.20220915105525.0/dist/ddn.js"></script>
+</head>
+
+<body>
+    <h1 style="font-size: 1.5em;">Detecting Quad from a Camera</h1>
+    <button id="btn-open-recognize">Open Document Normalizer</button>
+    <button id="confirmQuadForNormalization">confirmQuadForNormalization</button>
+    <button id="normalizeWithConfirmedQuad">normalizeWithConfirmedQuad</button>
+    <div id="div-ui-container" style="margin-top: 10px;height: 500px;"></div>
+    <div id="normalize-result"></div>
+    <script>
+        let normalizer = null;
+        let cameraEnhancer = null;
+        let promiseDDNReady;
+
+        /** LICENSE ALERT - README
+         * To use the library, you need to first specify a license key using the API "license" as shown below.
+        */
+        Dynamsoft.DDN.DocumentNormalizer.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjM0ODEwLTE2NTMzNTY5NzQ0ODMiLCJvcmdhbml6YXRpb25JRCI6IjIzNDgxMCJ9";
+        /**
+         * You can visit https://www.dynamsoft.com/customer/license/trialLicense?utm_source=github&product=ddn&package=js to get your own trial license good for 30 days.
+         * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
+         * For more information, see https://www.dynamsoft.com/document-normalizer/programming/javascript/user-guide/?ver=1.0.0&utm_source=github#specify-the-license or contact support@dynamsoft.com.
+         * LICENSE ALERT - THE END
+        */
+
+        document.getElementById('btn-open-recognize').onclick = async function() {
+          try {
+            await (promiseDDNReady = promiseDDNReady || (async() => {
+              cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
+
+              normalizer = await Dynamsoft.DDN.DocumentNormalizer.createInstance();
+              await normalizer.setImageSource(cameraEnhancer, {resultsHighlightBaseShapes: Dynamsoft.DCE.DrawingItem});
+
+              await document.getElementById('div-ui-container').append(cameraEnhancer.getUIElement());
+              
+              // Triggered when the video frame is detecting quad
+              normalizer.onQuadDetected = (results, sourceImage) => {
+                // console.log(results);
+              };
+              document.getElementById('confirmQuadForNormalization').addEventListener("click", () => {
+                normalizer.confirmQuadForNormalization();
+              })
+              document.getElementById('normalizeWithConfirmedQuad').addEventListener("click", async () => {
+                try {
+                  const res = await normalizer.normalizeWithConfirmedQuad();
+                  const cvs = res.image.toCanvas();
+                  if(document.body.clientWidth < 600) {
+                    cvs.style.width = "80%";
+                  }
+                  document.querySelector("#normalize-result").appendChild(cvs);
+                  console.log(res);
+                } catch(ex) {
+                  alert(ex.message || ex);
+                }
+              })
+            })());
+            await normalizer.startScanning(true);
+          } catch (ex) {
+            let errMsg;
+            if (ex.message.includes("network connection error")) {
+              errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
+            } else {
+              errMsg = ex.message||ex;
+            }
+            alert(errMsg);
+            console.error(errMsg);
+          }
+        };
+
+    </script>
+</body>
+
+</html>
