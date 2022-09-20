@@ -13,4 +13,4 @@ import { DocumentNormalizer } from 'shen-dynamsoft-document-normalizer';
  * LICENSE ALERT - THE END
  */
 
-DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/shen-dynamsoft-document-normalizer@0.20220915105525.0/dist/';
+DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/shen-dynamsoft-document-normalizer@0.20220920152346.0/dist/';
