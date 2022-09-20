@@ -19,7 +19,7 @@
         "@angular/platform-browser": "~11.2.5",
         "@angular/platform-browser-dynamic": "~11.2.5",
         "@angular/router": "~11.2.5",
-        "shen-dynamsoft-document-normalizer": "0.20220915105525.0",
+        "shen-dynamsoft-document-normalizer": "0.20220920152346.0",
         "dynamsoft-camera-enhancer": "3.0.1",
         "rxjs": "~6.6.0",
         "tslib": "^2.0.0",

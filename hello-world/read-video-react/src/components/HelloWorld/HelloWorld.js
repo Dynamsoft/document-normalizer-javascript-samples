@@ -1,7 +1,7 @@
 import React from 'react';
 import './HelloWorld.css';
 import reactLogo from '../../logo.svg';
-import "../../dcp"; // import side effects. engineResourcePath, so on.
+import "../../dce"; // import side effects. engineResourcePath, so on.
 import "../../ddn"; // import side effects. The license, engineResourcePath, so on.
 import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
 import VideoNormalizer from '../VideoNormalizer/VideoNormalizer';

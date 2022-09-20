@@ -11,7 +11,7 @@
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "react-scripts": "4.0.3",
-        "shen-dynamsoft-document-normalizer": "0.20220915105525.0",
+        "shen-dynamsoft-document-normalizer": "0.20220920152346.0",
         "web-vitals": "^1.0.1"
     },
     "scripts": {
