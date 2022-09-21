@@ -39,12 +39,14 @@ export default class VideoNormalizer extends React.Component {
     normalizeWithConfirmedQuad = async () => {
         try {
             const res = await this.pNormalizer.normalizeWithConfirmedQuad();
-            const cvs = res.image.toCanvas();
-            if(document.body.clientWidth < 600) {
-                cvs.style.width = "100%";
+            if(res) {
+                const cvs = res.image.toCanvas();
+                if(document.body.clientWidth < 600) {
+                    cvs.style.width = "100%";
+                }
+                this.elVnr.current.appendChild(cvs);
+                console.log(res);
             }
-            this.elVnr.current.appendChild(cvs);
-            console.log(res);
         } catch(ex) {
             alert(ex.message || ex)
         }
