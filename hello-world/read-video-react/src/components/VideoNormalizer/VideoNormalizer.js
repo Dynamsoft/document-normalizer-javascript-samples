@@ -1,5 +1,5 @@
 import { CameraEnhancer, DrawingItem } from "dynamsoft-camera-enhancer";
-import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
+import { DocumentNormalizer } from "@scannerproxy/ddnjs";
 import React from 'react';
 import './VideoNormalizer.css'
 

@@ -17,7 +17,7 @@
 import VideoNormalizer from "./VideoNormalizer";
 import ImgNormalizer from './ImgNormalizer.vue'
 import { ref, onMounted } from "vue";
-import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
+import { DocumentNormalizer } from "@scannerproxy/ddnjs";
 
 export default {
   name: "HelloWorld",

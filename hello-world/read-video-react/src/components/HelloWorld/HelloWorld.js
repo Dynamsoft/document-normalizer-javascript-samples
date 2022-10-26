@@ -3,7 +3,7 @@ import './HelloWorld.css';
 import reactLogo from '../../logo.svg';
 import "../../dce"; // import side effects. engineResourcePath, so on.
 import "../../ddn"; // import side effects. The license, engineResourcePath, so on.
-import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
+import { DocumentNormalizer } from "@scannerproxy/ddnjs";
 import VideoNormalizer from '../VideoNormalizer/VideoNormalizer';
 import ImgNormalizer from '../ImgNormalizer/ImgNormalizer';
 

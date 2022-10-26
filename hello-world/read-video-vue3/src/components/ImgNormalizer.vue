@@ -7,7 +7,7 @@
 
 <script>
 import { onBeforeUnmount, ref } from '@vue/runtime-core';
-import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
+import { DocumentNormalizer } from "@scannerproxy/ddnjs";
 export default {
   name: 'ImgNormalizer',
   setup() {

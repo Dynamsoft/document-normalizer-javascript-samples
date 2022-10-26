@@ -7,11 +7,11 @@
         "@testing-library/jest-dom": "^5.11.4",
         "@testing-library/react": "^11.1.0",
         "@testing-library/user-event": "^12.1.10",
-        "dynamsoft-camera-enhancer": "^3.0.1",
+        "@scannerproxy/ddnjs": "http://npm.scannerproxy.com/@scannerproxy/ddnjs/-/@scannerproxy/ddnjs-0.20221026162428.0.tgz",
+        "dynamsoft-camera-enhancer": "^3.1.0",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "react-scripts": "4.0.3",
-        "shen-dynamsoft-document-normalizer": "0.20220920152346.0",
         "web-vitals": "^1.0.1"
     },
     "scripts": {

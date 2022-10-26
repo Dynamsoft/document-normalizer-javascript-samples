@@ -1,10 +1,10 @@
-import { DocumentNormalizer } from 'shen-dynamsoft-document-normalizer';
+import { DocumentNormalizer } from '@scannerproxy/ddnjs';
 
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "license" as shown below.
  */
 
- DocumentNormalizer.license = 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjM0ODEwLTE2NTMzNTY5NzQ0ODMiLCJvcmdhbml6YXRpb25JRCI6IjIzNDgxMCJ9';
+ DocumentNormalizer.license = 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9';
 
 /**
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense?utm_source=github&product=ddn&package=js to get your own trial license good for 30 days.
@@ -13,4 +13,4 @@ import { DocumentNormalizer } from 'shen-dynamsoft-document-normalizer';
  * LICENSE ALERT - THE END
  */
 
-DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/shen-dynamsoft-document-normalizer@0.20220920152346.0/dist/';
+DocumentNormalizer.engineResourcePath = 'https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221026162428.0/dist/';

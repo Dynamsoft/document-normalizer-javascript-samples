@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import "../dce"; // import side effects. engineResourcePath, so on.
 import '../ddn'; // import side effects. The license, engineResourcePath, so on.
-import { DocumentNormalizer } from 'shen-dynamsoft-document-normalizer';
+import { DocumentNormalizer } from '@scannerproxy/ddnjs';
 
 @Component({
   selector: 'app-hello-world',

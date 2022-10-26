@@ -33,7 +33,7 @@
 <script>
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CameraEnhancer, DrawingItem } from "dynamsoft-camera-enhancer";
-import { DocumentNormalizer } from "shen-dynamsoft-document-normalizer";
+import { DocumentNormalizer } from "@scannerproxy/ddnjs";
 
 export default {
   setup() {
