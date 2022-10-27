@@ -51,7 +51,7 @@ export default {
 
         // Triggered when the video frame is recognized
         pNormalizer.onQuadDetected = (results, sourceImage) => {
-          // console.log(results);
+          console.log(results);
         };
       } catch (ex) {
         let errMsg;

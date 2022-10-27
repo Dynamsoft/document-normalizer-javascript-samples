@@ -46,7 +46,7 @@
               
               // Triggered when the video frame is detecting quad
               normalizer.onQuadDetected = (results, sourceImage) => {
-                // console.log(results);
+                console.log(results);
               };
               document.getElementById('confirmQuadForNormalization').addEventListener("click", () => {
                 normalizer.confirmQuadForNormalization();
