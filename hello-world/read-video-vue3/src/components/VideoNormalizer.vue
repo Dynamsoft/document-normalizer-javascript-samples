@@ -26,7 +26,7 @@
           </svg>
       </div>
     </div>
-    <div class="video-normalize-result" ref="elVnr"></div>
+    <div class="video-normalized-result" ref="elVnr"></div>
   </div>
 </template>
 

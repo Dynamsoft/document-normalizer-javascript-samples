@@ -42,7 +42,7 @@ export class VideoNormalizerComponent implements OnInit {
         if(document.body.clientWidth < 600) {
           cvs.style.width = "100%";
         }
-        document.querySelector(".video-normalize-result").appendChild(cvs);
+        document.querySelector(".video-normalized-result").appendChild(cvs);
       console.log(res);
       }
     } catch(ex) {

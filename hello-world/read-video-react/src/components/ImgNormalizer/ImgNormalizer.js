@@ -48,7 +48,7 @@ export default class ImgNormalizer extends Component {
     return (
       <div>
         <div className="ImgNormalizer"><input type="file" onChange={this.normalizeImg}/></div>
-        <div className="img-normalize-result" ref={this.elInr}></div>
+        <div className="img-normalized-result" ref={this.elInr}></div>
       </div>
     )
   }

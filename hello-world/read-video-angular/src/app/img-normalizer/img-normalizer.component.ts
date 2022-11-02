@@ -15,14 +15,14 @@ export class ImgNormalizerComponent implements OnInit {
     try {
       const normalizer = await (this.pNormalizer = this.pNormalizer || DocumentNormalizer.createInstance());
       const results = await normalizer.detectQuad(e.target.files[0]);
-      document.querySelector(".img-normalize-result").innerHTML = "";
+      document.querySelector(".img-normalized-result").innerHTML = "";
       for(let item of results) {
         const norRes = await normalizer.normalize(e.target.files[0], {quad: item.location});
         const cvs = norRes.image.toCanvas();
         if(document.body.clientWidth < 600) {
           cvs.style.width = "100%";
         }
-        document.querySelector(".img-normalize-result").appendChild(cvs);
+        document.querySelector(".img-normalized-result").appendChild(cvs);
       }
       console.log(results);
     } catch (ex: any) {

@@ -5,23 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Quickly recognize labels with Dynamsoft Label Recognizer from a live camera stream.">
-    <meta name="keywords" content="camera based document detecting">
+    <meta name="keywords" content="camera based quadrilateral detection and normalization">
     <title>Dynamsoft Document Normalizer Sample - Hello World (detecting via Camera)</title>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.1.0/dist/dce.js"></script>
-    <script src="https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221026162428.0/dist/ddn.js"></script>
+    <script src="https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221102132733.0/dist/ddn.js"></script>
 </head>
 
 <body>
-    <h1 style="font-size: 1.5em;">Detecting Quad from a Camera</h1>
-    <button id="btn-open-recognize">Open Document Normalizer</button>
+    <h1 style="font-size: 1.5em;">Detecting Quads and normalize via Camera</h1>
     <button id="confirmQuadForNormalization">Editor</button>
     <button id="normalizeWithConfirmedQuad">End Editor</button>
     <div id="div-ui-container" style="margin-top: 10px;height: 500px;"></div>
-    <div id="normalize-result"></div>
+    <div id="normalized-result"></div>
     <script>
         let normalizer = null;
         let cameraEnhancer = null;
-        let promiseDDNReady;
 
         /** LICENSE ALERT - README
          * To use the library, you need to first specify a license key using the API "license" as shown below.
@@ -34,37 +32,36 @@
          * LICENSE ALERT - THE END
         */
 
-        document.getElementById('btn-open-recognize').onclick = async function() {
+        (async function() {
           try {
-            await (promiseDDNReady = promiseDDNReady || (async() => {
-              cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
+            cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
+            normalizer = await Dynamsoft.DDN.DocumentNormalizer.createInstance();
+            await normalizer.setImageSource(cameraEnhancer, {resultsHighlightBaseShapes: Dynamsoft.DCE.DrawingItem});
 
-              normalizer = await Dynamsoft.DDN.DocumentNormalizer.createInstance();
-              await normalizer.setImageSource(cameraEnhancer, {resultsHighlightBaseShapes: Dynamsoft.DCE.DrawingItem});
-
-              await document.getElementById('div-ui-container').append(cameraEnhancer.getUIElement());
-              
-              // Triggered when the video frame is detecting quad
-              normalizer.onQuadDetected = (results, sourceImage) => {
-                console.log(results);
-              };
-              document.getElementById('confirmQuadForNormalization').addEventListener("click", () => {
-                normalizer.confirmQuadForNormalization();
-              })
-              document.getElementById('normalizeWithConfirmedQuad').addEventListener("click", async () => {
-                try {
-                  const res = await normalizer.normalizeWithConfirmedQuad();
+            await document.getElementById('div-ui-container').append(cameraEnhancer.getUIElement());
+            
+            // Triggered when the video frame is detecting quad
+            normalizer.onQuadDetected = (results, sourceImage) => {
+              console.log(results);
+            };
+            document.getElementById('confirmQuadForNormalization').addEventListener("click", () => {
+              normalizer.confirmQuadForNormalization();
+            })
+            document.getElementById('normalizeWithConfirmedQuad').addEventListener("click", async () => {
+              try {
+                const res = await normalizer.normalizeWithConfirmedQuad();
+                if(res) {
                   const cvs = res.image.toCanvas();
                   if(document.body.clientWidth < 600) {
                     cvs.style.width = "80%";
                   }
-                  document.querySelector("#normalize-result").appendChild(cvs);
+                  document.querySelector("#normalized-result").appendChild(cvs);
                   console.log(res);
-                } catch(ex) {
-                  alert(ex.message || ex);
                 }
-              })
-            })());
+              } catch(ex) {
+                alert(ex.message || ex);
+              }
+            })
             await normalizer.startScanning(true);
           } catch (ex) {
             let errMsg;
@@ -76,8 +73,7 @@
             alert(errMsg);
             console.error(errMsg);
           }
-        };
-
+        })();
     </script>
 </body>
 

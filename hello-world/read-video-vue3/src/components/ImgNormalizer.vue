@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ImgNormalizer"><input type="file" ref="iptRef" @change="normalizeImg"></div>
-    <div class="img-normalize-result" ref="elInr"></div>
+    <div class="img-normalized-result" ref="elInr"></div>
   </div>
 </template>
 
@@ -43,9 +43,9 @@ export default {
     }
 
     onBeforeUnmount(async ()=>{
-      if(pNormalizer.value) {
-        (await pNormalizer.value).dispose();
-        pNormalizer.value = null;
+      if(pNormalizer) {
+        (await pNormalizer).dispose();
+        pNormalizer = null;
         console.log('ImgNormalizer Component Unmount');
       }
     })
