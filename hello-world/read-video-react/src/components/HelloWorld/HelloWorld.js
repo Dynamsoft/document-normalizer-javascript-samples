@@ -11,13 +11,12 @@ class HelloWorld extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            bShowVideoNormalizer: true,
-            bShowImageNormalizer: false
+            bShowVideoNormalizer: true
         };
     }
     async componentDidMount() {
         try {
-            await DocumentNormalizer.loadWasm();
+            DocumentNormalizer.loadWasm();
         } catch (ex) {
             let errMsg;
             if (ex.message.includes("network connection error")) {
@@ -32,15 +31,7 @@ class HelloWorld extends React.Component {
 
     showVideoNormalizer = () => {
         this.setState({
-            bShowVideoNormalizer: true,
-            bShowImageNormalizer: false
-        });
-    }
-
-    showImageNormalizer = () => {
-        this.setState({
-            bShowVideoNormalizer: false,
-            bShowImageNormalizer: true
+            bShowVideoNormalizer: !this.state.bShowVideoNormalizer,
         });
     }
     
@@ -50,11 +41,11 @@ class HelloWorld extends React.Component {
                 <h1>Hello World for React<img src={reactLogo} className="App-logo" alt="logo" /></h1>
                 <div className="btn-group">
                     <button style={{marginRight: '5px', backgroundColor: this.state.bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}} onClick={this.showVideoNormalizer}>Video Normalizer</button>
-                    <button style={{marginRight: '5px', backgroundColor: this.state.bShowImageNormalizer ? 'rgb(255,174,55)' : 'white'}} onClick={this.showImageNormalizer}>Image Normalizer</button>
+                    <button style={{marginRight: '5px', backgroundColor: !this.state.bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}} onClick={this.showVideoNormalizer}>Image Normalizer</button>
                 </div>
                 <div className="container">
                     {this.state.bShowVideoNormalizer ? (<VideoNormalizer></VideoNormalizer>) : ""}
-                    {this.state.bShowImageNormalizer ? (<ImgNormalizer></ImgNormalizer>) : ""}
+                    {!this.state.bShowVideoNormalizer ? (<ImgNormalizer></ImgNormalizer>) : ""}
                 </div>
             </div>
         );

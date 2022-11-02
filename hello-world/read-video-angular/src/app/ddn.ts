@@ -13,4 +13,4 @@ import { DocumentNormalizer } from '@scannerproxy/ddnjs';
  * LICENSE ALERT - THE END
  */
 
-DocumentNormalizer.engineResourcePath = 'https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221027160705.0/dist/';
+DocumentNormalizer.engineResourcePath = 'https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221102093516.0/dist/';

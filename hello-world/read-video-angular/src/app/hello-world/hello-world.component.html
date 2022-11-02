@@ -3,11 +3,11 @@
         />
     </h1>
     <div class="btn-group">
-        <button [ngStyle]="{'margin-right': '5px', 'background-color': bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}" (click)="showVideoNormalizer()">Video Normalizer</button>
-        <button [ngStyle]="{'margin-right': '5px','background-color': !bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}" (click)="showImgNormalizer()">Image Normalizer</button>
+      <button [ngStyle]="{'margin-right': '5px', 'background-color': bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}" (click)="swtchVideoOrImgNormalizer()">Video Normalizer</button>
+      <button [ngStyle]="{'margin-right': '5px','background-color': !bShowVideoNormalizer ? 'rgb(255,174,55)' : 'white'}" (click)="swtchVideoOrImgNormalizer()">Image Normalizer</button>
     </div>
     <div class="container">
-        <app-video-normalizer *ngIf="bShowVideoNormalizer"></app-video-normalizer>
-        <app-img-normalizer *ngIf="bShowImgNormalizer"></app-img-normalizer>
+      <app-video-normalizer *ngIf="bShowVideoNormalizer"></app-video-normalizer>
+      <app-img-normalizer *ngIf="!bShowVideoNormalizer"></app-img-normalizer>
     </div>
 </div>

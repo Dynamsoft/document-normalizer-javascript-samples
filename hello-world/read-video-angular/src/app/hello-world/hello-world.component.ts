@@ -10,11 +10,10 @@ import { DocumentNormalizer } from '@scannerproxy/ddnjs';
 })
 export class HelloWorldComponent implements OnInit {
   bShowVideoNormalizer = true;
-  bShowImgNormalizer = false;
   async ngOnInit(): Promise<void> {
     // Load the library on page load to speed things up.
     try {
-      await DocumentNormalizer.loadWasm();
+      DocumentNormalizer.loadWasm();
     } catch (ex) {
       let errMsg: string;
       if (ex.message.includes("network connection error")) {
@@ -26,12 +25,7 @@ export class HelloWorldComponent implements OnInit {
       alert(errMsg);
     }
   }
-  showVideoNormalizer(): void {
-    this.bShowVideoNormalizer = true;
-    this.bShowImgNormalizer = false;
-  }
-  showImgNormalizer(): void {
-    this.bShowVideoNormalizer = false;
-    this.bShowImgNormalizer = true;
+  swtchVideoOrImgNormalizer(): void {
+    this.bShowVideoNormalizer = !this.bShowVideoNormalizer;
   }
 }

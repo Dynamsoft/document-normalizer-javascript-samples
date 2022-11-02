@@ -4,7 +4,7 @@
     "homepage": "./",
     "private": true,
     "dependencies": {
-        "@scannerproxy/ddnjs": "http://npm.scannerproxy.com/@scannerproxy/ddnjs/-/@scannerproxy/ddnjs-0.20221027160705.0.tgz",
+        "@scannerproxy/ddnjs": "http://npm.scannerproxy.com/@scannerproxy/ddnjs/-/@scannerproxy/ddnjs-0.20221102093516.0.tgz",
         "@testing-library/jest-dom": "^5.11.4",
         "@testing-library/react": "^11.1.0",
         "@testing-library/user-event": "^12.1.10",
