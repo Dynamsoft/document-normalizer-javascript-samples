@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentNormalizer } from '@scannerproxy/ddnjs';
+import { DocumentNormalizer } from 'dynamsoft-document-normalizer';
 
 @Component({
   selector: 'app-img-normalizer',

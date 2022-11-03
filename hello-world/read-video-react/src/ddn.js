@@ -1,4 +1,4 @@
-import { DocumentNormalizer } from '@scannerproxy/ddnjs';
+import { DocumentNormalizer } from 'dynamsoft-document-normalizer';
 
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "license" as shown below.
@@ -13,4 +13,4 @@ import { DocumentNormalizer } from '@scannerproxy/ddnjs';
  * LICENSE ALERT - THE END
  */
 
-DocumentNormalizer.engineResourcePath = 'https://npm.scannerproxy.com/cdn/@scannerproxy/ddnjs@0.20221102132733.0/dist/';
+DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@1.0.0/dist/';

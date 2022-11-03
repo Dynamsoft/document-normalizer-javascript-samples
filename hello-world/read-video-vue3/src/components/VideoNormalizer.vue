@@ -1,8 +1,8 @@
 <template>
   <div style="width: 100%; height: 100%">
     <div class="video-normalizer-btns">
-      <button class="editor-border-btn" @click="confirmQuadForNormalization">Editor</button>
-      <button class="end-editor-btn" @click="normalizeWithConfirmedQuad">End Editor</button>
+      <button class="editor-border-btn" @click="confirmQuadForNormalization">edit quadrilateral</button>
+      <button class="end-editor-btn" @click="normalizeWithConfirmedQuad">normalize</button>
     </div>
     <div class="component-document-normalizer" ref="elRefs">
       <svg class="dce-bg-loading" viewBox="0 0 1792 1792"><path d="M1760 896q0 176-68.5 336t-184 275.5-275.5 184-336 68.5-336-68.5-275.5-184-184-275.5-68.5-336q0-213 97-398.5t265-305.5 374-151v228q-221 45-366.5 221t-145.5 406q0 130 51 248.5t136.5 204 204 136.5 248.5 51 248.5-51 204-136.5 136.5-204 51-248.5q0-230-145.5-406t-366.5-221v-228q206 31 374 151t265 305.5 97 398.5z"/></svg>
@@ -33,7 +33,7 @@
 <script>
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CameraEnhancer, DrawingItem } from "dynamsoft-camera-enhancer";
-import { DocumentNormalizer } from "@scannerproxy/ddnjs";
+import { DocumentNormalizer } from "dynamsoft-document-normalizer";
 
 export default {
   setup() {
@@ -104,7 +104,7 @@ export default {
 <style scoped>
 @keyframes dce-rotate{from{transform:rotate(0turn);}to{transform:rotate(1turn);}}
 @keyframes dce-scanlight{from{top:0;}to{top:97%;}}
-.video-normalizer-btns {width: 50%;margin: 0 auto;margin-bottom: 10px; display: flex;justify-content: space-around;}
+.video-normalizer-btns {width: 75%;margin: 0 auto;margin-bottom: 10px; display: flex;justify-content: space-around;}
 .component-document-normalizer{width:100%;height:60%;min-height:480px;margin-top:10px;background:#eee;position:relative;margin-bottom: 10px;}
 .dce-bg-loading{animation:1s linear infinite dce-rotate;width:40%;height:40%;position:absolute;margin:auto;left:0;top:0;right:0;bottom:0;fill:#aaa;}
 .dce-bg-camera{display:none;width:40%;height:40%;position:absolute;margin:auto;left:0;top:0;right:0;bottom:0;fill:#aaa;}

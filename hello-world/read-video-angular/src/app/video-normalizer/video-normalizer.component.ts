@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CameraEnhancer, DrawingItem, DCEFrame } from "dynamsoft-camera-enhancer";
-import { DocumentNormalizer, DetectedQuadResult } from '@scannerproxy/ddnjs';
+import { DocumentNormalizer, DetectedQuadResult } from 'dynamsoft-document-normalizer';
 @Component({
   selector: 'app-video-normalizer',
   templateUrl: './video-normalizer.component.html',

@@ -8,9 +8,9 @@
         "lint": "vue-cli-service lint"
     },
     "dependencies": {
-        "@scannerproxy/ddnjs": "http://npm.scannerproxy.com/@scannerproxy/ddnjs/-/@scannerproxy/ddnjs-0.20221102132733.0.tgz",
         "core-js": "^3.6.5",
         "dynamsoft-camera-enhancer": "^3.1.0",
+        "dynamsoft-document-normalizer": "1.0.0",
         "vue": "3.2.31"
     },
     "devDependencies": {

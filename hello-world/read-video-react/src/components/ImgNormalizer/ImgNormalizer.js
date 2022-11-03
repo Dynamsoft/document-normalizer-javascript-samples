@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DocumentNormalizer } from "@scannerproxy/ddnjs";
+import { DocumentNormalizer } from "dynamsoft-document-normalizer";
 import './ImgNormalizer.css'
 
 export default class ImgNormalizer extends Component {
