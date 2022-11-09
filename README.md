@@ -1,10 +1,10 @@
 # Dynamsoft Document Normalizer samples for the web
 
-This repository contains multiple samples that demonstrate how to use [Dynamsoft Document Normalizer JavaScript Edition](https://www.dynamsoft.com/document-normalizer/programming/javascript/?ver=latest).
+This repository contains multiple samples that demonstrate how to use [Dynamsoft Document Normalizer JavaScript Edition](https://www.dynamsoft.com/document-normalizer/docs/programming/javascript/?ver=latest).
 
-[User Guide](https://www.dynamsoft.com/document-normalizer/programming/javascript/user-guide.html?ver=latest)
+[User Guide](https://www.dynamsoft.com/document-normalizer/docs/programming/javascript/user-guide.html?ver=latest)
 
-[API Reference](https://www.dynamsoft.com/document-normalizer/programming/javascript/api-reference/?ver=latest)
+[API Reference](https://www.dynamsoft.com/document-normalizer/docs/programming/javascript/api-reference/index.html?ver=latest)
 
 ## Hello World
 
