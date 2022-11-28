@@ -8,8 +8,8 @@ import { DocumentNormalizer } from 'dynamsoft-document-normalizer';
 
 /**
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense?utm_source=github&product=ddn&package=js to get your own trial license good for 30 days.
- * For more information, see https://www.dynamsoft.com/document-normalizer/programming/javascript/user-guide/?ver=1.0.10&utm_source=github#specify-the-license or contact support@dynamsoft.com.
+ * For more information, see https://www.dynamsoft.com/document-normalizer/programming/javascript/user-guide/?ver=1.0.11&utm_source=github#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
  */
 
-DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@1.0.10/dist/';
+DocumentNormalizer.engineResourcePath = 'https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@1.0.11/dist/';
