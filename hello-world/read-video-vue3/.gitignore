@@ -4,6 +4,7 @@ dist
 package-lock.json
 <<<<<<< HEAD
 dist
+.npmrc
 
 # local env files
 .env.local
