@@ -14,12 +14,15 @@
 <body>
     <h1 style="font-size: 1.5em;">Detecting Quads and normalize via Camera</h1>
     <button id="confirmQuadForNormalization">Edit quadrilateral</button>
-    <button id="normalizeWithConfirmedQuad">Normalize</button>
+    <button id="normalizeWithConfirmedQuad" disabled>Normalize</button>
     <div id="div-ui-container" style="margin-top: 10px;height: 500px;"></div>
     <div id="normalized-result"></div>
     <script>
         let normalizer = null;
         let cameraEnhancer = null;
+
+        const btnEdit = document.getElementById('confirmQuadForNormalization');
+        const btnNormalize = document.getElementById('normalizeWithConfirmedQuad');
 
         /** LICENSE ALERT - README
          * To use the library, you need to first specify a license key using the API "license" as shown below.
@@ -43,10 +46,11 @@
             normalizer.onQuadDetected = (results, sourceImage) => {
               console.log(results);
             };
-            document.getElementById('confirmQuadForNormalization').addEventListener("click", () => {
+            btnEdit.addEventListener("click", () => {
               normalizer.confirmQuadForNormalization();
+              btnNormalize.disabled = false;
             })
-            document.getElementById('normalizeWithConfirmedQuad').addEventListener("click", async () => {
+            btnNormalize.addEventListener("click", async () => {
               try {
                 const res = await normalizer.normalizeWithConfirmedQuad();
                 if(res) {
@@ -57,6 +61,7 @@
                   document.querySelector("#normalized-result").appendChild(cvs);
                   console.log(res);
                 }
+                btnNormalize.disabled = true;
               } catch(ex) {
                 alert(ex.message || ex);
               }
