@@ -7,23 +7,24 @@ import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisi
 import DrawingLayer from '@dynamsoft/dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
 
 function VideoRecognizer() {
-    let imageContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
-    let uiContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
-    let normalizedResultRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+    let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+    let cameraViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+    let normalizedImageContainer: MutableRefObject<HTMLDivElement | null> = useRef(null);
     let cameraEnhancer: MutableRefObject<Promise<CameraEnhancer> | null> = useRef(null);
     let router: MutableRefObject<Promise<CaptureVisionRouter> | null> = useRef(null);
     let [bShowUiContainer, setShowUiContainer] = useState(true);
     let [bShowImageContainer, setShowImageContainer] = useState(false);
     let [bDisabledBtnEdit, setDisabledBtnEdit] = useState(false);
     let [bDisabledBtnNor, setDisabledBtnNor] = useState(true);
+    let [bShowLoading, setShowLoading] = useState(true);
 
-    let normalizer: MutableRefObject<CaptureVisionRouter|null> = useRef(null);
-    let dce: MutableRefObject<CameraEnhancer|null> = useRef(null);
-    let imageEditorView: MutableRefObject<ImageEditorView|null> = useRef(null);
-    let layer: MutableRefObject<DrawingLayer|null> = useRef(null);
-    let view: MutableRefObject<CameraView|null> = useRef(null);
+    let normalizer: MutableRefObject<CaptureVisionRouter | null> = useRef(null);
+    let dce: MutableRefObject<CameraEnhancer | null> = useRef(null);
+    let imageEditorView: MutableRefObject<ImageEditorView | null> = useRef(null);
+    let layer: MutableRefObject<DrawingLayer | null> = useRef(null);
+    let view: MutableRefObject<CameraView | null> = useRef(null);
     let items: MutableRefObject<Array<any>> = useRef([]);
-    let image: MutableRefObject<DSImageData|null> = useRef(null);
+    let image: MutableRefObject<DSImageData | null> = useRef(null);
     let quads: Array<any> = [];
 
     useEffect((): any => {
@@ -31,24 +32,32 @@ function VideoRecognizer() {
             try {
                 view.current = await CameraView.createInstance();
                 dce.current = await (cameraEnhancer.current = CameraEnhancer.createInstance(view.current));
-                imageEditorView.current = await ImageEditorView.createInstance(imageContainerRef.current as HTMLDivElement);
+                imageEditorView.current = await ImageEditorView.createInstance(imageEditorViewContainerRef.current as HTMLDivElement);
                 /* Create an image editing layer view */
                 layer.current = imageEditorView.current.createDrawingLayer();
                 normalizer.current = await (router.current = CaptureVisionRouter.createInstance());
-                uiContainerRef.current!.append(view.current.getUIElement());
+                /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
+                let newSettings = await normalizer.current .getSimplifiedSettings("detect-document-boundaries");
+                newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+                await normalizer.current .updateSettings("detect-document-boundaries", newSettings!);
+                cameraViewContainerRef.current!.append(view.current.getUIElement());
                 normalizer.current.setInput(dce.current);
 
                 /* Add result receiver */
                 const resultReceiver = new CapturedResultReceiver();
                 /* onCapturedResultReceived will return all result items */
-                resultReceiver.onCapturedResultReceived = async (pResult) => {
-                    //console.log(pResult);
-                    items.current = pResult.items;
+                resultReceiver.onDetectedQuadsReceived = async (pResult) => {
+                    console.log(pResult);
+                    items.current = pResult.quadsResultItems;
+                }
+                resultReceiver.onOriginalImageResultReceived = (pResult) => {
+                    image.current = pResult.imageData;
                 }
                 normalizer.current.addResultReceiver(resultReceiver);
 
                 await dce.current.open();
                 await normalizer.current.startCapturing("detect-document-boundaries");
+                setShowLoading(false);
             } catch (ex: any) {
                 let errMsg: string;
                 if (ex.message.includes("network connection error")) {
@@ -74,10 +83,8 @@ function VideoRecognizer() {
         setShowUiContainer(false);
         /* Show editor view */
         setShowImageContainer(true);
-        /* Get the latest frame of video stream image data  */
-        image.current = dce.current!.fetchImage();
         /* Set the acquired image data to editor view */
-        imageEditorView.current!.setOriginalImage(image.current);
+        imageEditorView.current!.setOriginalImage(image.current!);
         quads = [];
         /* Create a graphical element of the detected quadrilateral and add it to the edit view layer */
         for (let i = 0; i < items.current.length; i++) {
@@ -94,7 +101,7 @@ function VideoRecognizer() {
 
     const normalze = async () => {
         setShowImageContainer(false);
-        normalizedResultRef.current!.innerHTML = "";
+        normalizedImageContainer.current!.innerHTML = "";
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         if (seletedItems.length) {
@@ -106,7 +113,7 @@ function VideoRecognizer() {
             await normalizer.current!.updateSettings("normalize-document", ss);
             /* Capture executes the normalize task */
             let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
-            normalizedResultRef.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+            normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
             layer.current!.clearDrawingItems();
         };
         setDisabledBtnEdit(false);
@@ -119,15 +126,16 @@ function VideoRecognizer() {
 
     return (
         <div className="container">
+            <div id="div-loading" style={{ display: bShowLoading ? "block" : "none" }}>Loading...</div>
             <div id="div-video-btns">
                 <button id="confirm-quad-for-normalization" onClick={confirmTheBoundary} disabled={bDisabledBtnEdit}>Confirm the Boundary</button>
                 <button id="normalize-with-confirmed-quad" onClick={normalze} disabled={bDisabledBtnNor}>Normalize</button>
             </div >
-            <div id="div-ui-container" style={{display: bShowUiContainer?"block":"none", marginTop: "10px", height: "500px" }} ref={uiContainerRef}></div>
-            <div id="div-image-container" style={{display: bShowImageContainer?"block":"none", width: "100vw", height: "70vh" }} ref={imageContainerRef}>
+            <div id="div-ui-container" style={{ display: bShowUiContainer ? "block" : "none", marginTop: "10px", height: "500px" }} ref={cameraViewContainerRef}></div>
+            <div id="div-image-container" style={{ display: bShowImageContainer ? "block" : "none", width: "100vw", height: "70vh" }} ref={imageEditorViewContainerRef}>
                 <div className="dce-image-container" style={{ width: "100%", height: "100%" }}></div>
             </div>
-            <div id="normalized-result" ref={normalizedResultRef}></div>
+            <div id="normalized-result" ref={normalizedImageContainer}></div>
         </div >
     );
 }

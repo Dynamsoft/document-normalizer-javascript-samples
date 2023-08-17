@@ -5,15 +5,16 @@ import { type NormalizedImageResultItem } from "@dynamsoft/ddnjs";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/cvrjs";
 
-let imageContainerRef: Ref<HTMLDivElement | null> = ref(null);
-let uiContainerRef: Ref<HTMLDivElement | null> = ref(null);
-let normalizedResultRef: Ref<HTMLDivElement | null> = ref(null);
+let imageEditorViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
+let cameraViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
+let normalizedImageContainer: Ref<HTMLDivElement | null> = ref(null);
 let cameraEnhancer: Ref<Promise<CameraEnhancer> | null> = ref(null);
 let router: Ref<Promise<CaptureVisionRouter> | null> = ref(null);
 let bShowUiContainer = ref(true);
 let bShowImageContainer = ref(false);
 let bDisabledBtnEdit = ref(false);
 let bDisabledBtnNor = ref(true);
+let bShowLoading = ref(true);
 
 let items: Array<any> = [];
 let quads: Array<any> = [];
@@ -25,19 +26,25 @@ onMounted(async () => {
     try {
         const view = await CameraView.createInstance();
         const dce = await (cameraEnhancer.value = CameraEnhancer.createInstance(view));
-        const imageEditorView = await ImageEditorView.createInstance(imageContainerRef.value as HTMLDivElement);
+        const imageEditorView = await ImageEditorView.createInstance(imageEditorViewContainerRef.value as HTMLDivElement);
         /* Create an image editing layer view */
         const layer = imageEditorView.createDrawingLayer();
         const normalizer = await (router.value = CaptureVisionRouter.createInstance());
-        uiContainerRef.value!.append(view.getUIElement());
+        /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
+        let newSettings = await normalizer.getSimplifiedSettings("detect-document-boundaries");
+        newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+        await normalizer.updateSettings("detect-document-boundaries", newSettings!);
+        cameraViewContainerRef.value!.append(view.getUIElement());
         normalizer.setInput(dce);
 
         /* Add result receiver */
         const resultReceiver = new CapturedResultReceiver();
-        /* onCapturedResultReceived will return all result items */
-        resultReceiver.onCapturedResultReceived = async (pResult) => {
+        resultReceiver.onDetectedQuadsReceived = (pResult) => {
             console.log(pResult);
-            items = pResult.items;
+            items = pResult.quadsResultItems;
+        }
+        resultReceiver.onOriginalImageResultReceived = (pResult) => {
+            image = pResult.imageData;
         }
         normalizer.addResultReceiver(resultReceiver);
 
@@ -46,8 +53,6 @@ onMounted(async () => {
             bShowUiContainer.value = false
             /* Show editor view */
             bShowImageContainer.value = true;
-            /* Get the latest frame of video stream image data  */
-            image = dce.fetchImage();
             /* Set the acquired image data to editor view */
             imageEditorView.setOriginalImage(image);
             quads = [];
@@ -66,7 +71,7 @@ onMounted(async () => {
 
         normalze = async () => {
             bShowImageContainer.value = false;
-            normalizedResultRef.value!.innerHTML = "";
+            normalizedImageContainer.value!.innerHTML = "";
             /* Get the selected quadrilateral */
             let seletedItems = imageEditorView.getSelectedDrawingItems();
             if (seletedItems.length) {
@@ -77,8 +82,8 @@ onMounted(async () => {
                 ss.roi.points = quad.points;
                 await normalizer.updateSettings("normalize-document", ss);
                 /* Capture executes the normalize task */
-                let norRes = await normalizer.capture(image, "normalize-document");
-                normalizedResultRef.value!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+                let normalizeResult = await normalizer.capture(image, "normalize-document");
+                normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
                 layer.clearDrawingItems();
             };
             bDisabledBtnNor.value = true;
@@ -91,6 +96,7 @@ onMounted(async () => {
 
         await dce.open();
         await normalizer.startCapturing("detect-document-boundaries");
+        bShowLoading.value = false;
     } catch (ex: any) {
         let errMsg: string;
         if (ex.message.includes("network connection error")) {
@@ -111,20 +117,25 @@ onUnmounted(async () => {
 </script>
 
 <template>
+    <div id="div-loading" v-show="bShowLoading">Loading...</div>
     <div id="div-video-btns">
-        <button id="confirm-quad-for-normalization" @click="confirmTheBoundary" :disabled="bDisabledBtnEdit">Confirm the Boundary</button>
+        <button id="confirm-quad-for-normalization" @click="confirmTheBoundary" :disabled="bDisabledBtnEdit">Confirm the
+            Boundary</button>
         <button id="normalize-with-confirmed-quad" @click="normalze" :disabled="bDisabledBtnNor">Normalize</button>
     </div>
-    <div id="div-ui-container" style="margin-top: 10px;height: 500px;" ref="uiContainerRef" v-show="bShowUiContainer"></div>
-    <div id="div-image-container" style="display:none; width: 100vw; height: 70vh" ref="imageContainerRef"
+    <div id="div-ui-container" style="margin-top: 10px;height: 500px;" ref="cameraViewContainerRef" v-show="bShowUiContainer"></div>
+    <div id="div-image-container" style="display:none; width: 100vw; height: 70vh" ref="imageEditorViewContainerRef"
         v-show="bShowImageContainer">
         <div class="dce-image-container" style="width: 100%; height: 100%"></div>
     </div>
-    <div id="normalized-result" ref="normalizedResultRef"></div>
+    <div id="normalized-result" ref="normalizedImageContainer"></div>
 </template>
     
 <style scoped>
 #div-video-btns {
-    width: 75%;margin: 0 auto;margin-bottom: 10px; display: flex;justify-content: space-around;
-}
-</style>
+    width: 75%;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-around;
+}</style>

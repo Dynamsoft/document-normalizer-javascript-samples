@@ -72,9 +72,9 @@
           layer = imageEditorView.createDrawingLayer(); 
           router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
           /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
-          let ss = await router.getSimplifiedSettings("detect-document-boundaries");
-          ss.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-          await router.updateSettings("detect-document-boundaries", ss);
+          let newSettings = await router.getSimplifiedSettings("detect-document-boundaries");
+          newSettings.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+          await router.updateSettings("detect-document-boundaries", newSettings);
           cameraViewContainer.append(view.getUIElement());
           router.setInput(cameraEnhancer);
 
