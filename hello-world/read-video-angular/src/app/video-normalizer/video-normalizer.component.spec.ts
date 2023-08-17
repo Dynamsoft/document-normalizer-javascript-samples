@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { VideoNormalizerComponent } from './video-normalizer.component';
 
-describe('DocumentNormalizerComponent', () => {
+describe('VideoRecognizerComponent', () => {
   let component: VideoNormalizerComponent;
   let fixture: ComponentFixture<VideoNormalizerComponent>;
 
@@ -10,9 +11,7 @@ describe('DocumentNormalizerComponent', () => {
       declarations: [ VideoNormalizerComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(VideoNormalizerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
