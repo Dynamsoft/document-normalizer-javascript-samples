@@ -100,7 +100,7 @@
                 ss.roi.points = pResult.quadsResultItems[0].location.points;
                 await router.updateSettings("normalize-document", ss);
                 /* Capture executes the normalize task */
-                let norRes = await router.capture(pResult.quadsResultItems.filter(item => item.type === 1)[0].imageData, "normalize-document");
+                let norRes = await router.capture(image, "normalize-document");
                 normalizedImageContainer.append(norRes.items[0].toCanvas());
                 cameraViewContainer.style.display = "none";
                 btnStart.style.display = "none";
@@ -149,7 +149,7 @@
             /* Set roi */
             let newSettings = await router.getSimplifiedSettings("normalize-document");
             newSettings.roiMeasuredInPercentage = 0;
-            snewSetting.roi.points = quad.points;
+            newSettings.roi.points = quad.points;
             await router.updateSettings("normalize-document", newSettings);
             /* Capture executes the normalize task */
             let normalizeResult  = await router.capture(image, "normalize-document");
