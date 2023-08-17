@@ -85,7 +85,7 @@
             if (!iptCheckbox.checked) {
               items = pResult.quadsResultItems;
             } else {
-              if (pResult.quadsResultItems.length <= 1) {
+              if (pResult.quadsResultItems.length === 0) {
                 frameCount = 0;
                 return;
               }
@@ -100,8 +100,8 @@
                 ss.roi.points = pResult.quadsResultItems[0].location.points;
                 await router.updateSettings("normalize-document", ss);
                 /* Capture executes the normalize task */
-                let norRes = await router.capture(image, "normalize-document");
-                normalizedImageContainer.append(norRes.items[0].toCanvas());
+                let normalizeResult = await router.capture(image, "normalize-document");
+                normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
                 cameraViewContainer.style.display = "none";
                 btnStart.style.display = "none";
                 btnRestart.style.display = "inline";
