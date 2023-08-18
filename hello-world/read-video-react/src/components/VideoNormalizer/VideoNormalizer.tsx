@@ -115,8 +115,8 @@ function VideoRecognizer() {
             /* Capture executes the normalize task */
             let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
             normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
-            layer.current!.clearDrawingItems();
         };
+        layer.current!.clearDrawingItems();
         setDisabledBtnEdit(false);
         setDisabledBtnNor(true);
         /* show video view */

@@ -85,8 +85,8 @@ onMounted(async () => {
                 /* Capture executes the normalize task */
                 let normalizeResult = await normalizer.capture(image, "normalize-document");
                 normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
-                layer.clearDrawingItems();
             };
+            layer.clearDrawingItems();
             bDisabledBtnNor.value = true;
             bDisabledBtnEdit.value = false;
             /* show video view */

@@ -155,8 +155,8 @@
               /* Capture executes the normalize task */
               let normalizeResult = await router.capture(image, "normalize-document");
               normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
-              layer.clearDrawingItems();
             }
+            layer.clearDrawingItems();
             btnNormalize.disabled = true;
             btnEdit.disabled = false;
             /* show video view */

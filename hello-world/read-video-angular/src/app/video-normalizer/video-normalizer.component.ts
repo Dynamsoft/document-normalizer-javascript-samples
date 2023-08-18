@@ -93,8 +93,8 @@ export class VideoNormalizerComponent {
           /* Capture executes the normalize task */
           let norRes = await normalizer.capture(this.image!, "normalize-document");
           this.normalizedImageContainerRef.nativeElement!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
-          layer.clearDrawingItems();
         };
+        layer.clearDrawingItems();
         this.bDisabledBtnNor = true;
         this.bDisabledBtnEdit = false;
         /* show video view */
