@@ -65,106 +65,122 @@
       btnNormalize.style.display = iptCheckbox.checked ? "none" : "inline";
     })
 
+    async function initDCE() {
+      view = await Dynamsoft.DCE.CameraView.createInstance();
+      cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(view);
+      imageEditorView = await Dynamsoft.DCE.ImageEditorView.createInstance(imageEditorViewContainer);
+      /* Create an image editing layer view */
+      layer = imageEditorView.createDrawingLayer();
+    }
+
+    let cvrReady = (async function initCVR() {
+      await initDCE();
+      router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
+      router.setInput(cameraEnhancer);
+      /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
+      let newSettings = await router.getSimplifiedSettings("detect-document-boundaries");
+      newSettings.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+      await router.updateSettings("detect-document-boundaries", newSettings);
+      cameraViewContainer.append(view.getUIElement());
+
+      const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
+
+      resultReceiver.onCapturedResultReceived = handleCapturedResult;
+
+      /* Specifiy the result receiver */
+      router.addResultReceiver(resultReceiver);
+    })();
+
+    async function handleCapturedResult(result) {
+      console.log(result);
+      /* Save the image data of the current frame for subsequent manual image editing */
+      image = result.items.filter(item => item.type === 1)[0].imageData;
+      if (!iptCheckbox.checked) {
+        items = result.items;
+      } else {
+        /* This part is the condition for automatic normalization, and this part of logic can be customized according to the actual scene */
+        if (result.items.length <= 1) {
+          frameCount = 0;
+          return;
+        }
+        frameCount++;
+        /* If automatic normalize is enabled, the optimal quadrilateral will be automatically normalized after the result is detected for 30 consecutive frames */
+        /* If deduplication is enabled, this part of the logic may be invalid */
+        if (frameCount === 30) {
+          frameCount = 0;
+          normalizedImageContainer.innerHTML = "";
+          /* Set the location of the item that needs to be normalized to roi */
+          let ss = await router.getSimplifiedSettings("normalize-document");
+          ss.roiMeasuredInPercentage = 0;
+          ss.roi.points = result.items[1].location.points;
+          await router.updateSettings("normalize-document", ss);
+          /* Capture executes the normalize task */
+          let normalizeResult = await router.capture(result.items.filter(item => item.type === 1)[0].imageData, "normalize-document");
+          normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
+          cameraViewContainer.style.display = "none";
+          btnStart.style.display = "none";
+          btnRestart.style.display = "inline";
+          await router.stopCapturing();
+        }
+      }
+    }
+
+    btnEdit.addEventListener("click", async () => {
+      /* Stop the previous detecting task since we assume we have found a good boundary */
+      router.stopCapturing();
+      /* Hide the cameraView and show the imageEditorView */
+      cameraViewContainer.style.display = "none";
+      imageEditorViewContainer.style.display = "block";
+      /* Draw the image in the imageEditorView first */
+      imageEditorView.setOriginalImage(image);
+      quads = [];
+      /* Draw the quad */
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type === Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
+        const points = items[i].location.points;
+        const quad = new Dynamsoft.DCE.DrawingItem.QuadDrawingItem({ points });
+        quads.push(quad);
+        layer.addDrawingItems(quads);
+      }
+      btnStart.style.display = "none";
+      btnRestart.style.display = "inline";
+      btnNormalize.disabled = false;
+      btnEdit.disabled = true;
+    })
+
+    btnNormalize.addEventListener("click", async () => {
+      /* Hide the imageEditorView */
+      imageEditorViewContainer.style.display = "none";
+      /* Remove the old normalized image if any */
+      normalizedImageContainer.innerHTML = "";
+      /* Get the selected quadrilateral */
+      let seletedItems = imageEditorView.getSelectedDrawingItems();
+      if (seletedItems.length) {
+        let quad = seletedItems[0].getQuad();
+        /* Set roi */
+        let newSettings = await router.getSimplifiedSettings("normalize-document");
+        newSettings.roiMeasuredInPercentage = 0;
+        newSettings.roi.points = quad.points;
+        await router.updateSettings("normalize-document", newSettings);
+        /* Capture executes the normalize task */
+        let normalizeResult = await router.capture(image, "normalize-document");
+        normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
+      }
+      layer.clearDrawingItems();
+      btnStart.style.display = "inline";
+      btnRestart.style.display = "none";
+      btnNormalize.disabled = true;
+      btnEdit.disabled = false;
+      /* show video view */
+      cameraViewContainer.style.display = "block";
+      view.getUIElement().style.display = "";
+      await router.startCapturing("detect-document-boundaries");
+    })
+
     async function startDetecting() {
       try {
         await (promiseCVRReady = promiseCVRReady || (async () => {
-          view = await Dynamsoft.DCE.CameraView.createInstance();
-          cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(view);
-          imageEditorView = await Dynamsoft.DCE.ImageEditorView.createInstance(imageEditorViewContainer);
-          /* Create an image editing layer view */
-          layer = imageEditorView.createDrawingLayer();
-          router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
-          /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
-          let newSettings = await router.getSimplifiedSettings("detect-document-boundaries");
-          newSettings.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-          await router.updateSettings("detect-document-boundaries", newSettings);
-          cameraViewContainer.append(view.getUIElement());
-          router.setInput(cameraEnhancer);
-
-          const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
-
-          resultReceiver.onCapturedResultReceived = async (result) => {
-            console.log(result);
-            image = result.items.filter(item => item.type === 1)[0].imageData;
-            if (!iptCheckbox.checked) {
-              items = result.items;
-            } else {
-              if (result.items.length <= 1) {
-                frameCount = 0;
-                return;
-              }
-              frameCount++;
-              /* If automatic normalize is enabled, the optimal quadrilateral will be automatically normalized after the result is detected for 15 consecutive frames */
-              if (frameCount === 80) {
-                frameCount = 0;
-                normalizedImageContainer.innerHTML = "";
-                /* Set the location of the item that needs to be normalized to roi */
-                let ss = await router.getSimplifiedSettings("normalize-document");
-                ss.roiMeasuredInPercentage = 0;
-                ss.roi.points = result.items[1].location.points;
-                await router.updateSettings("normalize-document", ss);
-                /* Capture executes the normalize task */
-                let normalizeResult = await router.capture(result.items.filter(item => item.type === 1)[0].imageData, "normalize-document");
-                normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
-                cameraViewContainer.style.display = "none";
-                btnStart.style.display = "none";
-                btnRestart.style.display = "inline";
-                await router.stopCapturing();
-              }
-            }
-          }
-
-          /* Specifiy the result receiver */
-          router.addResultReceiver(resultReceiver);
-
-          btnEdit.addEventListener("click", async () => {
-            /* Stop the previous detecting task since we assume we have found a good boundary */
-            router.stopCapturing();
-            /* Hide the cameraView and show the imageEditorView */
-            cameraViewContainer.style.display = "none";
-            imageEditorViewContainer.style.display = "block";
-            /* Draw the image in the imageEditorView first */
-            imageEditorView.setOriginalImage(image);
-            quads = [];
-            /* Draw the quad */
-            for (let i = 0; i < items.length; i++) {
-              if (items[i].type === Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
-              const points = items[i].location.points;
-              const quad = new Dynamsoft.DCE.DrawingItem.QuadDrawingItem({ points });
-              quads.push(quad);
-              layer.addDrawingItems(quads);
-            }
-            btnNormalize.disabled = false;
-            btnEdit.disabled = true;
-          })
-
-          btnNormalize.addEventListener("click", async () => {
-            /* Hide the imageEditorView */
-            imageEditorViewContainer.style.display = "none";
-            /* Remove the old normalized image if any */
-            normalizedImageContainer.innerHTML = "";
-            /* Get the selected quadrilateral */
-            let seletedItems = imageEditorView.getSelectedDrawingItems();
-            if (seletedItems.length) {
-              let quad = seletedItems[0].getQuad();
-              /* Set roi */
-              let newSettings = await router.getSimplifiedSettings("normalize-document");
-              newSettings.roiMeasuredInPercentage = 0;
-              newSettings.roi.points = quad.points;
-              await router.updateSettings("normalize-document", newSettings);
-              /* Capture executes the normalize task */
-              let normalizeResult = await router.capture(image, "normalize-document");
-              normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
-            }
-            layer.clearDrawingItems();
-            btnNormalize.disabled = true;
-            btnEdit.disabled = false;
-            /* show video view */
-            cameraViewContainer.style.display = "block";
-            view.getUIElement().style.display = "";
-            await router.startCapturing("detect-document-boundaries");
-          })
-
+          await cvrReady;
           /* Start streaming the video */
           await cameraEnhancer.open();
           /* Use the built-in template "detect-document-boundaries" to start a boundary detecting task */
@@ -183,10 +199,13 @@
     };
 
     async function restartDetecting() {
+      imageEditorViewContainer.style.display = "none";
       normalizedImageContainer.innerHTML = "";
       cameraViewContainer.style.display = "block";
       btnStart.style.display = "inline";
       btnRestart.style.display = "none";
+      btnNormalize.disabled = true;
+      btnEdit.disabled = false;
       await router.startCapturing("detect-document-boundaries");
     }
   </script>

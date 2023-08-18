@@ -24,18 +24,21 @@ let normalze: () => void;
 
 onMounted(async () => {
     try {
+        /* initDCE */
         const view = await CameraView.createInstance();
         const dce = await (cameraEnhancer.value = CameraEnhancer.createInstance(view));
         const imageEditorView = await ImageEditorView.createInstance(imageEditorViewContainerRef.value as HTMLDivElement);
         /* Create an image editing layer view */
         const layer = imageEditorView.createDrawingLayer();
+        
+        /* initCVR */
         const normalizer = await (router.value = CaptureVisionRouter.createInstance());
+        normalizer.setInput(dce);
         /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
         let newSettings = await normalizer.getSimplifiedSettings("detect-document-boundaries");
         newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
         await normalizer.updateSettings("detect-document-boundaries", newSettings!);
         cameraViewContainerRef.value!.append(view.getUIElement());
-        normalizer.setInput(dce);
 
         /* Add result receiver */
         const resultReceiver = new CapturedResultReceiver();

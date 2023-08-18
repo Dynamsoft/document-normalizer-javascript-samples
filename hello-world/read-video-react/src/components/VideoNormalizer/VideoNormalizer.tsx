@@ -30,18 +30,21 @@ function VideoRecognizer() {
     useEffect((): any => {
         const init = async () => {
             try {
+                /* initDCE */
                 view.current = await CameraView.createInstance();
                 dce.current = await (cameraEnhancer.current = CameraEnhancer.createInstance(view.current));
                 imageEditorView.current = await ImageEditorView.createInstance(imageEditorViewContainerRef.current as HTMLDivElement);
                 /* Create an image editing layer view */
                 layer.current = imageEditorView.current.createDrawingLayer();
+
+                /* initCVR */
                 normalizer.current = await (router.current = CaptureVisionRouter.createInstance());
+                normalizer.current.setInput(dce.current);
                 /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
                 let newSettings = await normalizer.current .getSimplifiedSettings("detect-document-boundaries");
                 newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
                 await normalizer.current .updateSettings("detect-document-boundaries", newSettings!);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
-                normalizer.current.setInput(dce.current);
 
                 /* Add result receiver */
                 const resultReceiver = new CapturedResultReceiver();

@@ -29,20 +29,23 @@ export class VideoNormalizerComponent {
   @ViewChild('cameraViewContainerRef') cameraViewContainerRef: any;
 
   async ngOnInit(): Promise<void> {
-    //try {
+    try {
+      /* initDCE */
       const view = await CameraView.createInstance();
       const dce = await (this.cameraEnhancer = CameraEnhancer.createInstance(view));
       const imageEditorView = await ImageEditorView.createInstance();
       /* Create an image editing layer view */
       const layer = imageEditorView.createDrawingLayer();
+
+      /* initCVR */
       const normalizer = await (this.router = CaptureVisionRouter.createInstance());
+      normalizer.setInput(dce);
       /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
       let newSettings = await normalizer.getSimplifiedSettings("detect-document-boundaries");
       newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
       await normalizer.updateSettings("detect-document-boundaries", newSettings!);
       this.cameraViewContainerRef.nativeElement!.append(view.getUIElement());
       this.imageEditorViewContainerRef.nativeElement!.append(imageEditorView.getUIElement());
-      normalizer.setInput(dce);
 
       /* Add result receiver */
       const resultReceiver = new CapturedResultReceiver();
@@ -106,16 +109,16 @@ export class VideoNormalizerComponent {
       await dce.open();
       await normalizer.startCapturing("detect-document-boundaries");
       this.bShowLoading = false;
-    // } catch (ex: any) {
-    //   let errMsg: string;
-    //   if (ex.message.includes("network connection error")) {
-    //     errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
-    //   } else {
-    //     errMsg = ex.message || ex;
-    //   }
-    //   console.error(errMsg);
-    //   alert(errMsg);
-    // }
+    } catch (ex: any) {
+      let errMsg: string;
+      if (ex.message.includes("network connection error")) {
+        errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
+      } else {
+        errMsg = ex.message || ex;
+      }
+      console.error(errMsg);
+      alert(errMsg);
+    }
   }
 
   async ngOnDestroy() {
