@@ -39,13 +39,14 @@ onMounted(async () => {
 
         /* Add result receiver */
         const resultReceiver = new CapturedResultReceiver();
-        resultReceiver.onDetectedQuadsReceived = (pResult) => {
-            console.log(pResult);
-            items = pResult.quadsResultItems;
+        resultReceiver.onDetectedQuadsReceived = (result) => {
+            console.log(result);
+            items = result.quadsResultItems;
         }
-        resultReceiver.onOriginalImageResultReceived = (pResult) => {
-            image = pResult.imageData;
+        resultReceiver.onOriginalImageResultReceived = (result) => {
+            image = result.imageData;
         }
+        /* Specifiy the result receiver */
         normalizer.addResultReceiver(resultReceiver);
 
         confirmTheBoundary = () => {

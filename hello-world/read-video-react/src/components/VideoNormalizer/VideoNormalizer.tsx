@@ -46,13 +46,14 @@ function VideoRecognizer() {
                 /* Add result receiver */
                 const resultReceiver = new CapturedResultReceiver();
                 /* onCapturedResultReceived will return all result items */
-                resultReceiver.onDetectedQuadsReceived = async (pResult) => {
-                    console.log(pResult);
-                    items.current = pResult.quadsResultItems;
+                resultReceiver.onDetectedQuadsReceived = async (result) => {
+                    console.log(result);
+                    items.current = result.quadsResultItems;
                 }
-                resultReceiver.onOriginalImageResultReceived = (pResult) => {
-                    image.current = pResult.imageData;
+                resultReceiver.onOriginalImageResultReceived = (result) => {
+                    image.current = result.imageData;
                 }
+                /* Specifiy the result receiver */
                 normalizer.current.addResultReceiver(resultReceiver);
 
                 await dce.current.open();

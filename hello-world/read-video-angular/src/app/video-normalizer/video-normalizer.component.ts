@@ -47,13 +47,14 @@ export class VideoNormalizerComponent {
       /* Add result receiver */
       const resultReceiver = new CapturedResultReceiver();
       /* onCapturedResultReceived will return all result items */
-      resultReceiver.onDetectedQuadsReceived = async (pResult) => {
-        console.log(pResult);
-        this.items = pResult.quadsResultItems;
+      resultReceiver.onDetectedQuadsReceived = async (result) => {
+        console.log(result);
+        this.items = result.quadsResultItems;
       }
-      resultReceiver.onOriginalImageResultReceived = (pResult) => {
-        this.image = pResult.imageData;
+      resultReceiver.onOriginalImageResultReceived = (result) => {
+        this.image = result.imageData;
       }
+      /* Specifiy the result receiver */
       normalizer.addResultReceiver(resultReceiver);
 
       this.confirmTheBoundary = () => {
