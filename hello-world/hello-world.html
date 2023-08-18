@@ -199,6 +199,7 @@
     };
 
     async function restartDetecting() {
+      /* Before starting, set some sample styles, not important */
       imageEditorViewContainer.style.display = "none";
       normalizedImageContainer.innerHTML = "";
       cameraViewContainer.style.display = "block";
@@ -206,6 +207,7 @@
       btnRestart.style.display = "none";
       btnNormalize.disabled = true;
       btnEdit.disabled = false;
+
       await router.startCapturing("detect-document-boundaries");
     }
   </script>
