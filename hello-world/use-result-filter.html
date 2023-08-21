@@ -17,7 +17,9 @@
 </head>
 
 <body>
-    <button onclick="startDetecting()">Start Detecting</button>
+    <button onclick="startDetecting()">Start Detecting</button><br>
+    <input type="checkbox" id="filter-verify" checked><label for="filter-verify">Enable Result Cross-Verification</label>
+    <input type="checkbox" id="filter-duplication"><label for="filter-duplication">Enable Result Deduplication</label>
     <div id="div-ui-container" style="margin-top: 10px;height: 500px;"></div>
     <script>
         /** LICENSE ALERT - README
@@ -36,7 +38,10 @@
         let cameraEnhancer;
         let view;
         let router;
+        let filter;
         const cameraViewContainer = document.querySelector("#div-ui-container");
+        const filterVerify = document.querySelector("#filter-verify");
+        const filterDuplication = document.querySelector("#filter-duplication");
 
         async function initDCE() {
             view = await Dynamsoft.DCE.CameraView.createInstance();
@@ -60,11 +65,12 @@
             router.addResultReceiver(resultReceiver);
 
             /* Specifiy the result filter, to use filter, you need to import dynamsoft-utility.js */
-            let filter = new Dynamsoft.Utility.MultiFrameResultCrossFilter();
+            filter = new Dynamsoft.Utility.MultiFrameResultCrossFilter();
             filter.enableResultCrossVerification(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, true);
-            filter.enableResultDeduplication(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, true);
-            filter.setDuplicateForgetTime(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, 3000);
+            filter.enableResultDeduplication(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, false);
             await router.addResultFilter(filter);
+            filterVerify.checked = true;
+            filterDuplication.checked = false;
         })();
 
         async function startDetecting() {
@@ -80,6 +86,16 @@
 
             }
         }
+        
+        filterVerify.addEventListener("change", () => {
+            if(!filter) return;
+            filter.enableResultCrossVerification(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, filterVerify.checked);
+        })
+        
+        filterDuplication.addEventListener("change", () => {
+            if(!filter) return;
+            filter.enableResultDeduplication(Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD, filterDuplication.checked);
+        })
     </script>
 </body>
 
