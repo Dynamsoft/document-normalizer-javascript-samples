@@ -83,6 +83,7 @@ function VideoRecognizer() {
     }, []);
 
     const confirmTheBoundary = () => {
+        if(!dce.current!.isOpen() || !items.current.length) return;
         /* Hide video view */
         setShowUiContainer(false);
         /* Show editor view */
@@ -108,17 +109,20 @@ function VideoRecognizer() {
         normalizedImageContainer.current!.innerHTML = "";
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
+        let quad;
         if (seletedItems.length) {
-            let quad = seletedItems[0].getQuad();
-            /* Set roi */
-            let ss = await normalizer.current!.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
-            ss.roiMeasuredInPercentage = false;
-            ss.roi.points = quad.points;
-            await normalizer.current!.updateSettings("normalize-document", ss);
-            /* Capture executes the normalize task */
-            let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
-            normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
-        };
+            quad = seletedItems[0].getQuad();
+        } else {
+            quad = items.current[0].location;
+        }
+        /* Set roi */
+        let ss = await normalizer.current!.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
+        ss.roiMeasuredInPercentage = false;
+        ss.roi.points = quad.points;
+        await normalizer.current!.updateSettings("normalize-document", ss);
+        /* Capture executes the normalize task */
+        let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
+        normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
         layer.current!.clearDrawingItems();
         setDisabledBtnEdit(false);
         setDisabledBtnNor(true);

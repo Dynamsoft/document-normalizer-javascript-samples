@@ -53,6 +53,7 @@ onMounted(async () => {
         normalizer.addResultReceiver(resultReceiver);
 
         confirmTheBoundary = () => {
+            if(!dce.isOpen() || !items.length) return;
             /* Hide video view */
             bShowUiContainer.value = false
             /* Show editor view */
@@ -78,17 +79,20 @@ onMounted(async () => {
             normalizedImageContainer.value!.innerHTML = "";
             /* Get the selected quadrilateral */
             let seletedItems = imageEditorView.getSelectedDrawingItems();
+            let quad;
             if (seletedItems.length) {
-                let quad = seletedItems[0].getQuad();
-                /* Set roi */
-                let ss = await normalizer.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
-                ss.roiMeasuredInPercentage = false;
-                ss.roi.points = quad.points;
-                await normalizer.updateSettings("normalize-document", ss);
-                /* Capture executes the normalize task */
-                let normalizeResult = await normalizer.capture(image, "normalize-document");
-                normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
-            };
+                quad = seletedItems[0].getQuad();
+            } else {
+                quad = items[0].location;
+            }
+            /* Set roi */
+            let ss = await normalizer.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
+            ss.roiMeasuredInPercentage = false;
+            ss.roi.points = quad.points;
+            await normalizer.updateSettings("normalize-document", ss);
+            /* Capture executes the normalize task */
+            let normalizeResult = await normalizer.capture(image, "normalize-document");
+            normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
             layer.clearDrawingItems();
             bDisabledBtnNor.value = true;
             bDisabledBtnEdit.value = false;

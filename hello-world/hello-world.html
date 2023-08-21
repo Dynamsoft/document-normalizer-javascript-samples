@@ -10,7 +10,6 @@
   <title>Detect the boundary of a document and normalize it</title>
   <script
     src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-core@3.0.10-dev-20230811163138/dist/core.js"></script>
-  <script src="https://npm.scannerproxy.com/cdn/@dynamsoft/utility@0.20230814110732.0/dist/utility.js"></script>
   <script src="https://npm.scannerproxy.com/cdn/@dynamsoft/cvrjs@0.20230815103342.0/dist/cvr.js"></script>
   <script
     src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-camera-enhancer@4.0.0-dev-20230811163231/dist/dce.js"></script>
@@ -59,11 +58,6 @@
     */
 
     Dynamsoft.CVR.CaptureVisionRouter.preloadModule(["DDN"]);
-
-    iptCheckbox.addEventListener("change", () => {
-      btnEdit.style.display = iptCheckbox.checked ? "none" : "inline";
-      btnNormalize.style.display = iptCheckbox.checked ? "none" : "inline";
-    })
 
     async function initDCE() {
       view = await Dynamsoft.DCE.CameraView.createInstance();
@@ -125,58 +119,6 @@
       }
     }
 
-    btnEdit.addEventListener("click", async () => {
-      /* Stop the previous detecting task since we assume we have found a good boundary */
-      router.stopCapturing();
-      /* Hide the cameraView and show the imageEditorView */
-      cameraViewContainer.style.display = "none";
-      imageEditorViewContainer.style.display = "block";
-      /* Draw the image in the imageEditorView first */
-      imageEditorView.setOriginalImage(image);
-      quads = [];
-      /* Draw the quad */
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].type === Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
-        const points = items[i].location.points;
-        const quad = new Dynamsoft.DCE.DrawingItem.QuadDrawingItem({ points });
-        quads.push(quad);
-        layer.addDrawingItems(quads);
-      }
-      btnStart.style.display = "none";
-      btnRestart.style.display = "inline";
-      btnNormalize.disabled = false;
-      btnEdit.disabled = true;
-    })
-
-    btnNormalize.addEventListener("click", async () => {
-      /* Hide the imageEditorView */
-      imageEditorViewContainer.style.display = "none";
-      /* Remove the old normalized image if any */
-      normalizedImageContainer.innerHTML = "";
-      /* Get the selected quadrilateral */
-      let seletedItems = imageEditorView.getSelectedDrawingItems();
-      if (seletedItems.length) {
-        let quad = seletedItems[0].getQuad();
-        /* Set roi */
-        let newSettings = await router.getSimplifiedSettings("normalize-document");
-        newSettings.roiMeasuredInPercentage = 0;
-        newSettings.roi.points = quad.points;
-        await router.updateSettings("normalize-document", newSettings);
-        /* Capture executes the normalize task */
-        let normalizeResult = await router.capture(image, "normalize-document");
-        normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
-      }
-      layer.clearDrawingItems();
-      btnStart.style.display = "inline";
-      btnRestart.style.display = "none";
-      btnNormalize.disabled = true;
-      btnEdit.disabled = false;
-      /* show video view */
-      cameraViewContainer.style.display = "block";
-      view.getUIElement().style.display = "";
-      await router.startCapturing("detect-document-boundaries");
-    })
-
     async function startDetecting() {
       try {
         await (promiseCVRReady = promiseCVRReady || (async () => {
@@ -210,6 +152,67 @@
 
       await router.startCapturing("detect-document-boundaries");
     }
+  
+    iptCheckbox.addEventListener("change", () => {
+      btnEdit.style.display = iptCheckbox.checked ? "none" : "inline";
+      btnNormalize.style.display = iptCheckbox.checked ? "none" : "inline";
+    })
+
+    btnEdit.addEventListener("click", async () => {
+      if(!cameraEnhancer.isOpen() || items.length <= 1) return;
+      /* Stop the previous detecting task since we assume we have found a good boundary */
+      router.stopCapturing();
+      /* Hide the cameraView and show the imageEditorView */
+      cameraViewContainer.style.display = "none";
+      imageEditorViewContainer.style.display = "block";
+      /* Draw the image in the imageEditorView first */
+      imageEditorView.setOriginalImage(image);
+      quads = [];
+      /* Draw the quad */
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type === Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
+        const points = items[i].location.points;
+        const quad = new Dynamsoft.DCE.DrawingItem.QuadDrawingItem({ points });
+        quads.push(quad);
+        layer.addDrawingItems(quads);
+      }
+      btnStart.style.display = "none";
+      btnRestart.style.display = "inline";
+      btnNormalize.disabled = false;
+      btnEdit.disabled = true;
+    })
+
+    btnNormalize.addEventListener("click", async () => {
+      /* Hide the imageEditorView */
+      imageEditorViewContainer.style.display = "none";
+      /* Remove the old normalized image if any */
+      normalizedImageContainer.innerHTML = "";
+      /* Get the selected quadrilateral */
+      let seletedItems = imageEditorView.getSelectedDrawingItems();
+      let quad;
+      if (seletedItems.length) {
+        quad = seletedItems[0].getQuad();
+      } else {
+        quad = items[1].location;
+      }
+      /* Set roi */
+      let newSettings = await router.getSimplifiedSettings("normalize-document");
+      newSettings.roiMeasuredInPercentage = 0;
+      newSettings.roi.points = quad.points;
+      await router.updateSettings("normalize-document", newSettings);
+      /* Capture executes the normalize task */
+      let normalizeResult = await router.capture(image, "normalize-document");
+      normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
+      layer.clearDrawingItems();
+      btnStart.style.display = "inline";
+      btnRestart.style.display = "none";
+      btnNormalize.disabled = true;
+      btnEdit.disabled = false;
+      /* show video view */
+      cameraViewContainer.style.display = "block";
+      view.getUIElement().style.display = "";
+      await router.startCapturing("detect-document-boundaries");
+    })
   </script>
 </body>
 
