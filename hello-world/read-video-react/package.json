@@ -5,6 +5,7 @@
   "homepage": "./",
   "dependencies": {
     "@dynamsoft/cvrjs": "^0.20230815153326.0",
+    "@dynamsoft/ddnjs": "^0.20230816112152.0",
     "@dynamsoft/dynamsoft-camera-enhancer": "4.0.0-dev-20230814175109",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
