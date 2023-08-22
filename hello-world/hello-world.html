@@ -208,6 +208,7 @@
         btnRestart.style.display = "none";
         btnNormalize.disabled = true;
         btnEdit.disabled = false;
+        layer.clearDrawingItems();
 
         await router.startCapturing("detect-document-boundaries");
       }
