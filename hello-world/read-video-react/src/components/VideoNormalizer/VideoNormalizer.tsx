@@ -47,9 +47,9 @@ function VideoRecognizer() {
                  * Because we need to normalize the original image later, here we set the return result type to
                  * include both the quadrilateral and original image data.
                  */
-                let newSettings = await normalizer.current .getSimplifiedSettings("detect-document-boundaries");
+                let newSettings = await normalizer.current.getSimplifiedSettings("detect-document-boundaries");
                 newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-                await normalizer.current .updateSettings("detect-document-boundaries", newSettings!);
+                await normalizer.current.updateSettings("detect-document-boundaries", newSettings!);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
                 /* Defines the result receiver for the task.*/
