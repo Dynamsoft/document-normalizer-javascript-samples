@@ -123,7 +123,8 @@
        * Defines the callback function that is executed after each image has been processed.
        */
       async function handleCapturedResult(result) {
-        console.log(result);
+        /* Do something with the result */
+        
         /* Saves the image data of the current frame for subsequent image editing. */
         image = result.items.filter((item) => item.type === 1)[0].imageData;
         if (!iptCheckbox.checked) {

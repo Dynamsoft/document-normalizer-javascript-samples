@@ -56,7 +56,7 @@ export class VideoNormalizerComponent {
       /* Defines the result receiver for the task.*/
       const resultReceiver = new CapturedResultReceiver();
       resultReceiver.onDetectedQuadsReceived = async (result) => {
-        console.log(result);
+        /* Do something with the result */
         this.items = result.quadsResultItems;
       }
       resultReceiver.onOriginalImageResultReceived = (result) => {

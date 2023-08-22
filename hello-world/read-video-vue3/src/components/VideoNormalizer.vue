@@ -49,7 +49,7 @@ onMounted(async () => {
         /* Defines the result receiver for the task.*/
         const resultReceiver = new CapturedResultReceiver();
         resultReceiver.onDetectedQuadsReceived = (result) => {
-            console.log(result);
+            /* Do something with the result */
             items = result.quadsResultItems;
         }
         resultReceiver.onOriginalImageResultReceived = (result) => {

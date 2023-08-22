@@ -55,7 +55,7 @@ function VideoRecognizer() {
                 /* Defines the result receiver for the task.*/
                 const resultReceiver = new CapturedResultReceiver();
                 resultReceiver.onDetectedQuadsReceived = async (result) => {
-                    console.log(result);
+                    /* Do something with the result */
                     items.current = result.quadsResultItems;
                 }
                 resultReceiver.onOriginalImageResultReceived = (result) => {
