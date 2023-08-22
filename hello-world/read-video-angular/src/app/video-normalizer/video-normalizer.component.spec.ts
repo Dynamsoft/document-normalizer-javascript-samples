@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { VideoNormalizerComponent } from './video-normalizer.component';
 
-describe('VideoRecognizerComponent', () => {
+describe('VideoNormalizerComponent', () => {
   let component: VideoNormalizerComponent;
   let fixture: ComponentFixture<VideoNormalizerComponent>;
 

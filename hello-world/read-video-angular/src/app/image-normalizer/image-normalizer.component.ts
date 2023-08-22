@@ -43,6 +43,6 @@ export class ImageNormalizerComponent {
 
   async ngOnDestroy() {
     (await this.router)!.dispose();
-    console.log('ImageRecognizer Component Unmount');
+    console.log('ImageNormalizer Component Unmount');
   }
 }

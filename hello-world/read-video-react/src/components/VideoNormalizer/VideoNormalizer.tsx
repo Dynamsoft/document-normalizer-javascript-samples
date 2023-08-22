@@ -6,7 +6,7 @@ import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynam
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/cvrjs";
 import DrawingLayer from '@dynamsoft/dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
 
-function VideoRecognizer() {
+function VideoNormalizer() {
     let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     let cameraViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
     let normalizedImageContainer: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -157,4 +157,4 @@ function VideoRecognizer() {
     );
 }
 
-export default VideoRecognizer;
+export default VideoNormalizer;

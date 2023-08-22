@@ -3,7 +3,7 @@ import { type NormalizedImageResultItem } from "@dynamsoft/ddnjs";
 import { CaptureVisionRouter } from "@dynamsoft/cvrjs";
 import "./ImageNormalizer.css";
 
-function ImageRecognizer() {
+function ImageNormalizer() {
     const iptRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
     const elInr: MutableRefObject<HTMLDivElement | null> = useRef(null);
     const router: MutableRefObject<Promise<CaptureVisionRouter> | null> = useRef(null);
@@ -50,4 +50,4 @@ function ImageRecognizer() {
     )
 }
 
-export default ImageRecognizer;
+export default ImageNormalizer;

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImageNormalizerComponent } from './image-normalizer.component';
 
-describe('ImageRecognizerComponent', () => {
+describe('ImageNormalizerComponent', () => {
   let component: ImageNormalizerComponent;
   let fixture: ComponentFixture<ImageNormalizerComponent>;
 

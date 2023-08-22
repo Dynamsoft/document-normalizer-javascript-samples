@@ -14,8 +14,8 @@ const mode: Ref<string> = ref("video");
       <img class='title-logo' :src="vueLogo" alt="logo" />
     </div>
     <div class='top-btns'>
-      <button @click="mode = 'video'" :style="{ backgroundColor: mode === 'video' ? 'rgb(255, 174, 55)' : '#FFFFFF' }">VideoRecognizer</button>
-      <button @click="mode = 'image'" :style="{ backgroundColor: mode === 'image' ? 'rgb(255, 174, 55)' : '#FFFFFF' }">ImageRecognizer</button>
+      <button @click="mode = 'video'" :style="{ backgroundColor: mode === 'video' ? 'rgb(255, 174, 55)' : '#FFFFFF' }">VideoNormalizer</button>
+      <button @click="mode = 'image'" :style="{ backgroundColor: mode === 'image' ? 'rgb(255, 174, 55)' : '#FFFFFF' }">ImageNormalizer</button>
     </div>
     <VideoNormalizer v-if="mode === 'video'"/> 
     <ImageNormalizer v-else/>
