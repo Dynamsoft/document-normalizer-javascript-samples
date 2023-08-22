@@ -30,25 +30,30 @@ function VideoRecognizer() {
     useEffect((): any => {
         const init = async () => {
             try {
-                /* initDCE */
                 view.current = await CameraView.createInstance();
                 dce.current = await (cameraEnhancer.current = CameraEnhancer.createInstance(view.current));
                 imageEditorView.current = await ImageEditorView.createInstance(imageEditorViewContainerRef.current as HTMLDivElement);
-                /* Create an image editing layer view */
+                /* Creates an image editing layer for drawing found document boundaries. */
                 layer.current = imageEditorView.current.createDrawingLayer();
 
-                /* initCVR */
+                /**
+                 * Creates a CaptureVisionRouter instance and configure the task to detect document boundaries.
+                 * Also, make sure the original image is returned after it has been processed.
+                 */
                 normalizer.current = await (router.current = CaptureVisionRouter.createInstance());
                 normalizer.current.setInput(dce.current);
-                /* Set the result type to be returned, because we need to normalize the original image later, so here we set the return result type to quadrilateral and original image data */
+                /**
+                 * Sets the result types to be returned.
+                 * Because we need to normalize the original image later, here we set the return result type to
+                 * include both the quadrilateral and original image data.
+                 */
                 let newSettings = await normalizer.current .getSimplifiedSettings("detect-document-boundaries");
                 newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
                 await normalizer.current .updateSettings("detect-document-boundaries", newSettings!);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
-                /* Add result receiver */
+                /* Defines the result receiver for the task.*/
                 const resultReceiver = new CapturedResultReceiver();
-                /* onCapturedResultReceived will return all result items */
                 resultReceiver.onDetectedQuadsReceived = async (result) => {
                     console.log(result);
                     items.current = result.quadsResultItems;
@@ -56,10 +61,10 @@ function VideoRecognizer() {
                 resultReceiver.onOriginalImageResultReceived = (result) => {
                     image.current = result.imageData;
                 }
-                /* Specifiy the result receiver */
                 normalizer.current.addResultReceiver(resultReceiver);
 
                 await dce.current.open();
+                /* Uses the built-in template "detect-document-boundaries" to start a continuous boundary detection task. */
                 await normalizer.current.startCapturing("detect-document-boundaries");
                 setShowLoading(false);
             } catch (ex: any) {
@@ -84,14 +89,13 @@ function VideoRecognizer() {
 
     const confirmTheBoundary = () => {
         if(!dce.current!.isOpen() || !items.current.length) return;
-        /* Hide video view */
+        /* Hides the cameraView and shows the imageEditorView. */
         setShowUiContainer(false);
-        /* Show editor view */
         setShowImageContainer(true);
-        /* Set the acquired image data to editor view */
+        /* Draws the image on the imageEditorView first. */
         imageEditorView.current!.setOriginalImage(image.current!);
         quads = [];
-        /* Create a graphical element of the detected quadrilateral and add it to the edit view layer */
+        /* Draws the document boundary (quad) over the image. */
         for (let i = 0; i < items.current.length; i++) {
             if (items.current[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
             const points = items.current[i].location.points;
@@ -105,7 +109,9 @@ function VideoRecognizer() {
     }
 
     const normalze = async () => {
+        /* Hides the imageEditorView. */
         setShowImageContainer(false);
+        /* Removes the old normalized image if any. */
         normalizedImageContainer.current!.innerHTML = "";
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
@@ -115,12 +121,15 @@ function VideoRecognizer() {
         } else {
             quad = items.current[0].location;
         }
-        /* Set roi */
+        /**
+         * Sets the coordinates of the ROI (region of interest)
+         * in the built-in template "normalize-document".
+         */
         let ss = await normalizer.current!.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
         ss.roiMeasuredInPercentage = false;
         ss.roi.points = quad.points;
         await normalizer.current!.updateSettings("normalize-document", ss);
-        /* Capture executes the normalize task */
+        /* Executes the normalization and shows the result on the page */
         let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
         normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
         layer.current!.clearDrawingItems();
