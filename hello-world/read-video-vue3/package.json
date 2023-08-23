@@ -11,8 +11,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@dynamsoft/cvrjs": "^0.20230815153326.0",
-    "@dynamsoft/ddnjs": "^0.20230816112152.0",
+    "@dynamsoft/cvrjs": "^0.20230822151012.0",
     "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.0-dev-20230814175109",
     "vue": "^3.2.45"
   },
