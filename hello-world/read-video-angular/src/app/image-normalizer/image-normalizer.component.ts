@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { type NormalizedImageResultItem } from "@dynamsoft/ddnjs";
-import { CaptureVisionRouter } from "@dynamsoft/cvrjs";
+import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
 
 @Component({
   selector: 'app-image-normalizer',

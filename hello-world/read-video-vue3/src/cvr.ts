@@ -1,6 +1,6 @@
-import { CaptureVisionRouter, LicenseManager } from "@dynamsoft/cvrjs";
+import { CaptureVisionRouter, LicenseManager } from "dynamsoft-capture-vision-router";
 
-CaptureVisionRouter.engineResourcePath = "https://npm.scannerproxy.com/cdn/@dynamsoft/cvrjs@0.20230815103342.0/dist/";
+CaptureVisionRouter.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.0.11/dist/";
 /** LICENSE ALERT - README 
  * To use the library, you need to first call the method initLicense() to initialize the license using a license key string.
  */

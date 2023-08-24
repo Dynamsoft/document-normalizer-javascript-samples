@@ -1,10 +1,10 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
-import { EnumCapturedResultItemType, type DSImageData } from "@dynamsoft/dynamsoft-core";
-import { type NormalizedImageResultItem } from "@dynamsoft/ddnjs";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/cvrjs";
-import DrawingLayer from '@dynamsoft/dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
+import { EnumCapturedResultItemType, type DSImageData, ImageSourceAdapter } from "dynamsoft-core";
+import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
+import DrawingLayer from 'dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
 
 function VideoNormalizer() {
     let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -41,7 +41,7 @@ function VideoNormalizer() {
                  * Also, make sure the original image is returned after it has been processed.
                  */
                 normalizer.current = await (router.current = CaptureVisionRouter.createInstance());
-                normalizer.current.setInput(dce.current);
+                normalizer.current.setInput(dce.current as any as ImageSourceAdapter);
                 /**
                  * Sets the result types to be returned.
                  * Because we need to normalize the original image later, here we set the return result type to
