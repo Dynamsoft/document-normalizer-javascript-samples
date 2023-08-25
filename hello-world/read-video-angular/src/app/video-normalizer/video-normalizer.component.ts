@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { EnumCapturedResultItemType, type DSImageData, ImageSourceAdapter } from "dynamsoft-core";
+import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
@@ -41,7 +41,7 @@ export class VideoNormalizerComponent {
       * Also, make sure the original image is returned after it has been processed.
       */
       const normalizer = await (this.router = CaptureVisionRouter.createInstance());
-      normalizer.setInput(dce as any as ImageSourceAdapter);
+      normalizer.setInput(dce);
       /**
       * Sets the result types to be returned.
       * Because we need to normalize the original image later, here we set the return result type to

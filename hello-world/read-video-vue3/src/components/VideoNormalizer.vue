@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-import { EnumCapturedResultItemType, ImageSourceAdapter,  type DSImageData } from "dynamsoft-core";
+import { EnumCapturedResultItemType,  type DSImageData } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
@@ -35,7 +35,7 @@ onMounted(async () => {
          * Also, make sure the original image is returned after it has been processed.
          */
         const normalizer = await (router.value = CaptureVisionRouter.createInstance());
-        normalizer.setInput(dce as any as ImageSourceAdapter);
+        normalizer.setInput(dce);
         /**
          * Sets the result types to be returned.
          * Because we need to normalize the original image later, here we set the return result type to
