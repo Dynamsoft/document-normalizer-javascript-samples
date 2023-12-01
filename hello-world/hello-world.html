@@ -251,10 +251,6 @@
       });
 
       btnNormalize.addEventListener("click", async () => {
-        /* Hides the imageEditorView. */
-        imageEditorViewContainer.style.display = "none";
-        /* Removes the old normalized image if any. */
-        normalizedImageContainer.innerHTML = "";
         /* Gets the selected quadrilateral. */
         let seletedItems = imageEditorView.getSelectedDrawingItems();
         let quad;
@@ -263,6 +259,26 @@
         } else {
           quad = items[1].location;
         }
+        const isPointOverBoundary = (point) => {
+          if(point.x < 0 || 
+          point.x > image.width || 
+          point.y < 0 ||
+          point.y > image.height) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+        /* Check if the points beyond the boundaries of the image. */
+        if (quad.points.some(point => isPointOverBoundary(point))) {
+          alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
+          return;
+        } 
+
+        /* Hides the imageEditorView. */
+        imageEditorViewContainer.style.display = "none";
+        /* Removes the old normalized image if any. */
+        normalizedImageContainer.innerHTML = "";
         /**
          * Sets the coordinates of the ROI (region of interest)
          * in the built-in template "normalize-document".
@@ -275,7 +291,9 @@
         await router.updateSettings("normalize-document", newSettings);
         /* Executes the normalization and shows the result on the page. */
         let normalizeResult = await router.capture(image, "normalize-document");
-        normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
+        if (normalizeResult.items[0]) {
+          normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
+        }
         layer.clearDrawingItems();
         /**
          * Resets the buttons and starts over.
