@@ -1,6 +1,6 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
-import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
+import { EnumCapturedResultItemType, type DSImageData, type Point } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
@@ -109,10 +109,6 @@ function VideoNormalizer() {
     }
 
     const normalze = async () => {
-        /* Hides the imageEditorView. */
-        setShowImageContainer(false);
-        /* Removes the old normalized image if any. */
-        normalizedImageContainer.current!.innerHTML = "";
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         let quad;
@@ -121,6 +117,26 @@ function VideoNormalizer() {
         } else {
             quad = items.current[0].location;
         }
+        const isPointOverBoundary = (point: Point) => {
+            if(point.x < 0 || 
+            point.x > image.current!.width || 
+            point.y < 0 ||
+            point.y > image.current!.height) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        /* Check if the points beyond the boundaries of the image. */
+        if (quad.points.some((point: Point) => isPointOverBoundary(point))) {
+            alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
+            return;
+        }
+
+        /* Hides the imageEditorView. */
+        setShowImageContainer(false);
+        /* Removes the old normalized image if any. */
+        normalizedImageContainer.current!.innerHTML = "";
         /**
          * Sets the coordinates of the ROI (region of interest)
          * in the built-in template "normalize-document".
@@ -131,7 +147,9 @@ function VideoNormalizer() {
         await normalizer.current!.updateSettings("normalize-document", ss);
         /* Executes the normalization and shows the result on the page */
         let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
-        normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        if (norRes.items[0]) {
+            normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        }
         layer.current!.clearDrawingItems();
         setDisabledBtnEdit(false);
         setDisabledBtnNor(true);

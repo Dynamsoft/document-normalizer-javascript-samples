@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-import { EnumCapturedResultItemType,  type DSImageData } from "dynamsoft-core";
+import { EnumCapturedResultItemType,  type DSImageData, type Point } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
@@ -79,10 +79,6 @@ onMounted(async () => {
         }
 
         normalze = async () => {
-            /* Hides the imageEditorView. */
-            bShowImageContainer.value = false;
-            /* Removes the old normalized image if any. */
-            normalizedImageContainer.value!.innerHTML = "";
             /* Get the selected quadrilateral */
             let seletedItems = imageEditorView.getSelectedDrawingItems();
             let quad;
@@ -91,6 +87,26 @@ onMounted(async () => {
             } else {
                 quad = items[0].location;
             }
+            const isPointOverBoundary = (point: Point) => {
+                if(point.x < 0 || 
+                point.x > image.width || 
+                point.y < 0 ||
+                point.y > image.height) {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            /* Check if the points beyond the boundaries of the image. */
+            if (quad.points.some((point: Point) => isPointOverBoundary(point))) {
+                alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
+                return;
+            }
+            
+            /* Hides the imageEditorView. */
+            bShowImageContainer.value = false;
+            /* Removes the old normalized image if any. */
+            normalizedImageContainer.value!.innerHTML = "";
             /**
              * Sets the coordinates of the ROI (region of interest)
              * in the built-in template "normalize-document".
@@ -101,7 +117,9 @@ onMounted(async () => {
             await normalizer.updateSettings("normalize-document", ss);
             /* Executes the normalization and shows the result on the page */
             let normalizeResult = await normalizer.capture(image, "normalize-document");
-            normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
+            if (normalizeResult.items[0]) {
+                normalizedImageContainer.value!.append((normalizeResult.items[0] as NormalizedImageResultItem).toCanvas());
+            }
             layer.clearDrawingItems();
             bDisabledBtnNor.value = true;
             bDisabledBtnEdit.value = false;

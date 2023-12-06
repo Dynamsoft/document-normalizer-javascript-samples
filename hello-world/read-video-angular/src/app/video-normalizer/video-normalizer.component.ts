@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
+import { EnumCapturedResultItemType, type DSImageData, type Point } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
@@ -86,10 +86,6 @@ export class VideoNormalizerComponent {
       }
 
       this.normalze = async () => {
-        /* Hides the imageEditorView. */
-        this.bShowImageContainer = false;
-        /* Removes the old normalized image if any. */
-        this.normalizedImageContainerRef.nativeElement!.innerHTML = "";
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.getSelectedDrawingItems();
         let quad;
@@ -98,6 +94,26 @@ export class VideoNormalizerComponent {
         } else {
           quad = this.items[0].location;
         }
+        const isPointOverBoundary = (point: Point) => {
+          if(point.x < 0 || 
+          point.x > this.image!.width || 
+          point.y < 0 ||
+          point.y > this.image!.height) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+        /* Check if the points beyond the boundaries of the image. */
+        if (quad.points.some((point: Point) => isPointOverBoundary(point))) {
+          alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
+          return;
+        } 
+
+        /* Hides the imageEditorView. */
+        this.bShowImageContainer = false;
+        /* Removes the old normalized image if any. */
+        this.normalizedImageContainerRef.nativeElement!.innerHTML = "";
         /**
          * Sets the coordinates of the ROI (region of interest)
          * in the built-in template "normalize-document".
@@ -108,7 +124,9 @@ export class VideoNormalizerComponent {
         await normalizer.updateSettings("normalize-document", ss);
         /* Executes the normalization and shows the result on the page */
         let norRes = await normalizer.capture(this.image!, "normalize-document");
-        this.normalizedImageContainerRef.nativeElement!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        if (norRes.items[0]) {
+          this.normalizedImageContainerRef.nativeElement!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        }
         layer.clearDrawingItems();
         this.bDisabledBtnNor = true;
         this.bDisabledBtnEdit = false;
