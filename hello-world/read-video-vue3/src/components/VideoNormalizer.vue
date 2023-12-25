@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-import { EnumCapturedResultItemType,  type DSImageData, type Point } from "dynamsoft-core";
-import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
+import { EnumCapturedResultItemType, type DSImageData, type OriginalImageResultItem, type Point } from "@dynamsoft/dynamsoft-core";
+import { type NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
 
 let imageEditorViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
 let cameraViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
@@ -20,7 +20,7 @@ let items: Array<any> = [];
 let quads: Array<any> = [];
 let image: DSImageData;
 let confirmTheBoundary: () => void;
-let normalze: () => void;
+let normalize: () => void;
 
 onMounted(async () => {
     try {
@@ -29,12 +29,13 @@ onMounted(async () => {
         const imageEditorView = await ImageEditorView.createInstance(imageEditorViewContainerRef.value as HTMLDivElement);
         /* Creates an image editing layer for drawing found document boundaries. */
         const layer = imageEditorView.createDrawingLayer();
-        
+
         /**
          * Creates a CaptureVisionRouter instance and configure the task to detect document boundaries.
          * Also, make sure the original image is returned after it has been processed.
          */
         const normalizer = await (router.value = CaptureVisionRouter.createInstance());
+
         normalizer.setInput(dce);
         /**
          * Sets the result types to be returned.
@@ -48,17 +49,17 @@ onMounted(async () => {
 
         /* Defines the result receiver for the task.*/
         const resultReceiver = new CapturedResultReceiver();
-        resultReceiver.onDetectedQuadsReceived = (result) => {
-            /* Do something with the result */
-            items = result.quadsResultItems;
-        }
-        resultReceiver.onOriginalImageResultReceived = (result) => {
-            image = result.imageData;
+        resultReceiver.onCapturedResultReceived = (result) => {
+            const originalImage = result.items.filter(item => item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE);
+            if (originalImage.length) {
+                image = (originalImage[0] as OriginalImageResultItem).imageData;
+            }
+            items = result.items.filter(item => item.type === EnumCapturedResultItemType.CRIT_DETECTED_QUAD);
         }
         normalizer.addResultReceiver(resultReceiver);
 
         confirmTheBoundary = () => {
-            if(!dce.isOpen() || !items.length) return;
+            if (!dce.isOpen() || !items.length) return;
             /* Hides the cameraView and shows the imageEditorView. */
             bShowUiContainer.value = false
             bShowImageContainer.value = true;
@@ -78,7 +79,7 @@ onMounted(async () => {
             normalizer.stopCapturing();
         }
 
-        normalze = async () => {
+        normalize = async () => {
             /* Get the selected quadrilateral */
             let seletedItems = imageEditorView.getSelectedDrawingItems();
             let quad;
@@ -157,9 +158,10 @@ onUnmounted(async () => {
     <div id="div-video-btns">
         <button id="confirm-quad-for-normalization" @click="confirmTheBoundary" :disabled="bDisabledBtnEdit">Confirm the
             Boundary</button>
-        <button id="normalize-with-confirmed-quad" @click="normalze" :disabled="bDisabledBtnNor">Normalize</button>
+        <button id="normalize-with-confirmed-quad" @click="normalize" :disabled="bDisabledBtnNor">Normalize</button>
     </div>
-    <div id="div-ui-container" style="margin-top: 10px;height: 500px;" ref="cameraViewContainerRef" v-show="bShowUiContainer"></div>
+    <div id="div-ui-container" style="margin-top: 10px;height: 500px;" ref="cameraViewContainerRef"
+        v-show="bShowUiContainer"></div>
     <div id="div-image-container" style="display:none; width: 100vw; height: 70vh" ref="imageEditorViewContainerRef"
         v-show="bShowImageContainer">
         <div class="dce-image-container" style="width: 100%; height: 100%"></div>
@@ -174,4 +176,5 @@ onUnmounted(async () => {
     margin-bottom: 10px;
     display: flex;
     justify-content: space-around;
-}</style>
+}
+</style>

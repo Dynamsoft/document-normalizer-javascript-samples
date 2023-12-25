@@ -1,10 +1,9 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
-import { EnumCapturedResultItemType, type DSImageData, type Point } from "dynamsoft-core";
-import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
-import DrawingLayer from 'dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
+import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "@dynamsoft/dynamsoft-core";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
+import { NormalizedImageResultItem } from '@dynamsoft/dynamsoft-document-normalizer';
 
 function VideoNormalizer() {
     let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -21,7 +20,7 @@ function VideoNormalizer() {
     let normalizer: MutableRefObject<CaptureVisionRouter | null> = useRef(null);
     let dce: MutableRefObject<CameraEnhancer | null> = useRef(null);
     let imageEditorView: MutableRefObject<ImageEditorView | null> = useRef(null);
-    let layer: MutableRefObject<DrawingLayer | null> = useRef(null);
+    let layer: MutableRefObject<any> = useRef(null);
     let view: MutableRefObject<CameraView | null> = useRef(null);
     let items: MutableRefObject<Array<any>> = useRef([]);
     let image: MutableRefObject<DSImageData | null> = useRef(null);
@@ -54,12 +53,12 @@ function VideoNormalizer() {
 
                 /* Defines the result receiver for the task.*/
                 const resultReceiver = new CapturedResultReceiver();
-                resultReceiver.onDetectedQuadsReceived = async (result) => {
-                    /* Do something with the result */
-                    items.current = result.quadsResultItems;
-                }
-                resultReceiver.onOriginalImageResultReceived = (result) => {
-                    image.current = result.imageData;
+                resultReceiver.onCapturedResultReceived = (result) => {
+                    const originalImage = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE });
+                    if (originalImage.length) {
+                        image.current = (originalImage[0] as OriginalImageResultItem).imageData;
+                    }
+                    items.current = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_DETECTED_QUAD });
                 }
                 normalizer.current.addResultReceiver(resultReceiver);
 
@@ -88,7 +87,7 @@ function VideoNormalizer() {
     }, []);
 
     const confirmTheBoundary = () => {
-        if(!dce.current!.isOpen() || !items.current.length) return;
+        if (!dce.current!.isOpen() || !items.current.length) return;
         /* Hides the cameraView and shows the imageEditorView. */
         setShowUiContainer(false);
         setShowImageContainer(true);
@@ -108,7 +107,7 @@ function VideoNormalizer() {
         normalizer.current!.stopCapturing();
     }
 
-    const normalze = async () => {
+    const normalize = async () => {
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         let quad;
@@ -164,7 +163,7 @@ function VideoNormalizer() {
             <div id="div-loading" style={{ display: bShowLoading ? "block" : "none" }}>Loading...</div>
             <div id="div-video-btns">
                 <button id="confirm-quad-for-normalization" onClick={confirmTheBoundary} disabled={bDisabledBtnEdit}>Confirm the Boundary</button>
-                <button id="normalize-with-confirmed-quad" onClick={normalze} disabled={bDisabledBtnNor}>Normalize</button>
+                <button id="normalize-with-confirmed-quad" onClick={normalize} disabled={bDisabledBtnNor}>Normalize</button>
             </div >
             <div id="div-ui-container" style={{ display: bShowUiContainer ? "block" : "none", marginTop: "10px", height: "500px" }} ref={cameraViewContainerRef}></div>
             <div id="div-image-container" style={{ display: bShowImageContainer ? "block" : "none", width: "100vw", height: "70vh" }} ref={imageEditorViewContainerRef}>

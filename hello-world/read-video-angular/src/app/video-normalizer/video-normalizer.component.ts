@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { EnumCapturedResultItemType, type DSImageData, type Point } from "dynamsoft-core";
-import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
+import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
+import { type NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
+import { CapturedResultItem, OriginalImageResultItem, Point } from '@dynamsoft/dynamsoft-core';
 
 @Component({
   selector: 'app-video-normalizer',
@@ -41,7 +42,7 @@ export class VideoNormalizerComponent {
       * Also, make sure the original image is returned after it has been processed.
       */
       const normalizer = await (this.router = CaptureVisionRouter.createInstance());
-      normalizer.setInput(dce);
+      normalizer.setInput(dce as any);
       /**
       * Sets the result types to be returned.
       * Because we need to normalize the original image later, here we set the return result type to
@@ -55,17 +56,17 @@ export class VideoNormalizerComponent {
 
       /* Defines the result receiver for the task.*/
       const resultReceiver = new CapturedResultReceiver();
-      resultReceiver.onDetectedQuadsReceived = async (result) => {
-        /* Do something with the result */
-        this.items = result.quadsResultItems;
-      }
-      resultReceiver.onOriginalImageResultReceived = (result) => {
-        this.image = result.imageData;
+      resultReceiver.onCapturedResultReceived = (result) => {
+        const originalImage = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE });
+        if (originalImage.length) {
+          this.image = (originalImage[0] as OriginalImageResultItem).imageData;
+        }
+        this.items = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_DETECTED_QUAD });
       }
       normalizer.addResultReceiver(resultReceiver);
 
       this.confirmTheBoundary = () => {
-        if(!dce.isOpen() || !this.items.length) return;
+        if (!dce.isOpen() || !this.items.length) return;
         /* Hides the cameraView and shows the imageEditorView. */
         this.bShowUiContainer = false
         this.bShowImageContainer = true;
@@ -95,10 +96,10 @@ export class VideoNormalizerComponent {
           quad = this.items[0].location;
         }
         const isPointOverBoundary = (point: Point) => {
-          if(point.x < 0 || 
-          point.x > this.image!.width || 
-          point.y < 0 ||
-          point.y > this.image!.height) {
+          if (point.x < 0 ||
+            point.x > this.image!.width ||
+            point.y < 0 ||
+            point.y > this.image!.height) {
             return true;
           } else {
             return false;
@@ -108,7 +109,7 @@ export class VideoNormalizerComponent {
         if (quad.points.some((point: Point) => isPointOverBoundary(point))) {
           alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
           return;
-        } 
+        }
 
         /* Hides the imageEditorView. */
         this.bShowImageContainer = false;
