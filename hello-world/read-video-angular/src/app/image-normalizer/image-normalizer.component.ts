@@ -20,7 +20,7 @@ export class ImageNormalizerComponent {
     try {
       this.elInr.nativeElement!.innerHTML = "";
       const normalizer = await this.router;
-      const results = await normalizer!.capture(e.target.files[0], "detect-and-normalize-document");
+      const results = await normalizer!.capture(e.target.files[0], "DetectAndNormalizeDocument_Default");
       if (results.items.length) {
         const cvs = (results.items[0] as NormalizedImageResultItem).toCanvas();
         if (document.body.clientWidth < 600) {

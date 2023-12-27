@@ -42,9 +42,9 @@ onMounted(async () => {
          * Because we need to normalize the original image later, here we set the return result type to
          * include both the quadrilateral and original image data.
          */
-        let newSettings = await normalizer.getSimplifiedSettings("detect-document-boundaries");
+        let newSettings = await normalizer.getSimplifiedSettings("DetectDocumentBoundaries_Default");
         newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-        await normalizer.updateSettings("detect-document-boundaries", newSettings!);
+        await normalizer.updateSettings("DetectDocumentBoundaries_Default", newSettings!);
         cameraViewContainerRef.value!.append(view.getUIElement());
 
         /* Defines the result receiver for the task.*/
@@ -127,12 +127,12 @@ onMounted(async () => {
             /* show video view */
             bShowUiContainer.value = true
             view.getUIElement().style.display = "";
-            await normalizer.startCapturing("detect-document-boundaries");
+            await normalizer.startCapturing("DetectDocumentBoundaries_Default");
         }
 
         await dce.open();
-        /* Uses the built-in template "detect-document-boundaries" to start a continuous boundary detection task. */
-        await normalizer.startCapturing("detect-document-boundaries");
+        /* Uses the built-in template "DetectDocumentBoundaries_Default" to start a continuous boundary detection task. */
+        await normalizer.startCapturing("DetectDocumentBoundaries_Default");
         bShowLoading.value = false;
     } catch (ex: any) {
         let errMsg: string;

@@ -46,9 +46,9 @@ function VideoNormalizer() {
                  * Because we need to normalize the original image later, here we set the return result type to
                  * include both the quadrilateral and original image data.
                  */
-                let newSettings = await normalizer.current.getSimplifiedSettings("detect-document-boundaries");
+                let newSettings = await normalizer.current.getSimplifiedSettings("DetectDocumentBoundaries_Default");
                 newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-                await normalizer.current.updateSettings("detect-document-boundaries", newSettings!);
+                await normalizer.current.updateSettings("DetectDocumentBoundaries_Default", newSettings!);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
                 /* Defines the result receiver for the task.*/
@@ -63,8 +63,8 @@ function VideoNormalizer() {
                 normalizer.current.addResultReceiver(resultReceiver);
 
                 await dce.current.open();
-                /* Uses the built-in template "detect-document-boundaries" to start a continuous boundary detection task. */
-                await normalizer.current.startCapturing("detect-document-boundaries");
+                /* Uses the built-in template "DetectDocumentBoundaries_Default" to start a continuous boundary detection task. */
+                await normalizer.current.startCapturing("DetectDocumentBoundaries_Default");
                 setShowLoading(false);
             } catch (ex: any) {
                 let errMsg: string;
@@ -155,7 +155,7 @@ function VideoNormalizer() {
         /* show video view */
         setShowUiContainer(true);
         view.current!.getUIElement().style.display = "";
-        await normalizer.current!.startCapturing("detect-document-boundaries");
+        await normalizer.current!.startCapturing("DetectDocumentBoundaries_Default");
     }
 
     return (
