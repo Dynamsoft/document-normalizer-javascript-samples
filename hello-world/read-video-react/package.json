@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
-    "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231225171256",
+    "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231227171713",
     "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231227110709",
     "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231227100017",
     "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231227110754",

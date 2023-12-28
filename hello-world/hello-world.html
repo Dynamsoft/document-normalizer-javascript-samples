@@ -22,8 +22,6 @@
     src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-camera-enhancer@4.0.1-dev-20231221102727/dist/dce.js"></script>
 </head>
 
-<!--  -->
-
 <body>
   <h1 style="font-size: 1.5em">
     Detect the boundary of a document and normalize it
@@ -36,15 +34,7 @@
   </button>
   <button id="confirm-quad-for-normalization">Confirm the Boundary</button>
   <button id="normalize-with-confirmed-quad" disabled>Normalize</button><br />
-  <input type="checkbox" style="vertical-align: middle" id="auto-normalize" /><label style="vertical-align: middle"
-    for="ipt-checkbox">Normalize Automatically</label>
-  <br />
-  <input type="checkbox" id="filter-verify" checked />
-  <label for="filter-verify">Enable Result Cross-Verification</label>
-  <br />
-  <input type="checkbox" id="filter-duplication" />
-  <label for="filter-duplication">Enable Result Deduplication</label>
-  <br />
+  <input type="checkbox" style="vertical-align: middle" id="auto-normalize" /><label style="vertical-align: middle" for="auto-normalize">Normalize Automatically</label>
   <div id="div-ui-container" style="margin-top: 10px; height: 450px"></div>
   <div id="div-image-container" style="display: none; width: 100%; height: 70vh"></div>
   <div id="normalized-result"></div>
@@ -63,8 +53,6 @@
     const btnStart = document.querySelector("#start-detecting");
     const btnRestart = document.querySelector("#restart-detecting");
     const cameraViewContainer = document.querySelector("#div-ui-container");
-    const filterVerify = document.querySelector("#filter-verify");
-    const filterDuplication = document.querySelector("#filter-duplication");
     const normalizedImageContainer = document.querySelector("#normalized-result");
     const btnEdit = document.querySelector("#confirm-quad-for-normalization");
     const btnNormalize = document.querySelector("#normalize-with-confirmed-quad");
@@ -91,12 +79,8 @@
      */
     async function initDCE() {
       view = await Dynamsoft.DCE.CameraView.createInstance();
-      cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(
-        view
-      );
-      imageEditorView = await Dynamsoft.DCE.ImageEditorView.createInstance(
-        imageEditorViewContainer
-      );
+      cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(view);
+      imageEditorView = await Dynamsoft.DCE.ImageEditorView.createInstance(imageEditorViewContainer);
       /* Creates an image editing layer for drawing found document boundaries. */
       layer = imageEditorView.createDrawingLayer();
     }
@@ -114,49 +98,22 @@
        * Because we need to normalize the original image later, here we set the return result type to
        * include both the quadrilateral and original image data.
        */
-      let newSettings = await router.getSimplifiedSettings(
-        "detect-document-boundaries"
-      );
-      newSettings.capturedResultItemTypes =
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD |
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-      await router.updateSettings("detect-document-boundaries", newSettings);
+      let newSettings = await router.getSimplifiedSettings("DetectDocumentBoundaries_Default");
+      newSettings.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+      await router.updateSettings("DetectDocumentBoundaries_Default", newSettings);
       cameraViewContainer.append(view.getUIElement());
 
       /* Defines the result receiver for the task.*/
       const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
       resultReceiver.onCapturedResultReceived = handleCapturedResult;
       router.addResultReceiver(resultReceiver);
-
-      /**
-       * Specifies a result filter.
-       *
-       * NOTE that you must import dynamsoft-utility.js to use MultiFrameResultCrossFilter.
-       */
-      filter = new Dynamsoft.Utility.MultiFrameResultCrossFilter();
-      /* Enables result cross-verification.*/
-      filter.enableResultCrossVerification(
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD,
-        true
-      );
-      /* Disables result deduplication. */
-      filter.enableResultDeduplication(
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD,
-        false
-      );
-      await router.addResultFilter(filter);
-      filterVerify.checked = true;
-      filterDuplication.checked = false;
-
     })();
 
     /**
      * Defines the callback function that is executed after each image has been processed.
      */
     async function handleCapturedResult(result) {
-      console.log(result);
       /* Do something with the result */
-
       /* Saves the image data of the current frame for subsequent image editing. */
       const originalImage = result.items.filter((item) => item.type === 1);
       originalImageData = originalImage.length && originalImage[0].imageData;
@@ -189,25 +146,19 @@
            * to normalize the document by setting the coordinates of the ROI (region of interest)
            * in the built-in template "NormalizeDocument_Default".
            */
-          let settings = await router.getSimplifiedSettings(
-            "NormalizeDocument_Default"
-          );
+          let settings = await router.getSimplifiedSettings("NormalizeDocument_Default");
           settings.roiMeasuredInPercentage = 0;
           settings.roi.points = result.items[1].location.points;
           await router.updateSettings("NormalizeDocument_Default", settings);
           /**
            * After that, executes the normalization and shows the result on the page.
            */
-          let normalizeResult = await router.capture(
-            originalImageData,
-            "NormalizeDocument_Default"
-          );
-          normalizedImageContainer.append(
-            normalizeResult.items[0].toCanvas()
-          );
+          let normalizeResult = await router.capture(originalImageData, "NormalizeDocument_Default");
+          normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
           cameraViewContainer.style.display = "none";
           btnStart.style.display = "none";
           btnRestart.style.display = "inline";
+          btnEdit.disabled = true;
           await router.stopCapturing();
         }
       }
@@ -215,20 +166,17 @@
 
     async function startDetecting() {
       try {
-        await (promiseCVRReady =
-          promiseCVRReady ||
-          (async () => {
-            await cvrReady;
-            /* Starts streaming the video. */
-            await cameraEnhancer.open();
-            /* Uses the built-in template "DetectDocumentBoundaries_Default" to start a continuous boundary detection task. */
-            await router.startCapturing("DetectDocumentBoundaries_Default");
-          })());
+        await (promiseCVRReady = promiseCVRReady || (async () => {
+          await cvrReady;
+          /* Starts streaming the video. */
+          await cameraEnhancer.open();
+          /* Uses the built-in template "DetectDocumentBoundaries_Default" to start a continuous boundary detection task. */
+          await router.startCapturing("DetectDocumentBoundaries_Default");
+        })());
       } catch (ex) {
         let errMsg;
         if (ex.message.includes("network connection error")) {
-          errMsg =
-            "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
+          errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
         } else {
           errMsg = ex.message || ex;
         }
@@ -248,12 +196,12 @@
       btnEdit.disabled = false;
       layer.clearDrawingItems();
 
-      await router.startCapturing("detect-document-boundaries");
+      await router.startCapturing("DetectDocumentBoundaries_Default");
     }
 
     autoNormalize.addEventListener("change", () => {
-      btnEdit.style.display = iptCheckbox.checked ? "none" : "inline";
-      btnNormalize.style.display = iptCheckbox.checked ? "none" : "inline";
+      btnEdit.style.display = autoNormalize.checked ? "none" : "inline";
+      btnNormalize.style.display = autoNormalize.checked ? "none" : "inline";
     });
 
     btnEdit.addEventListener("click", async () => {
@@ -313,9 +261,7 @@
        * Sets the coordinates of the ROI (region of interest)
        * in the built-in template "NormalizeDocument_Default".
        */
-      let newSettings = await router.getSimplifiedSettings(
-        "NormalizeDocument_Default"
-      );
+      let newSettings = await router.getSimplifiedSettings("NormalizeDocument_Default");
       newSettings.roiMeasuredInPercentage = 0;
       newSettings.roi.points = quad.points;
       await router.updateSettings("NormalizeDocument_Default", newSettings);
@@ -325,35 +271,8 @@
         normalizedImageContainer.append(normalizeResult.items[0].toCanvas());
       }
       layer.clearDrawingItems();
-      /**
-       * Resets the buttons and starts over.
-       */
-      btnStart.style.display = "inline";
-      btnRestart.style.display = "none";
       btnNormalize.disabled = true;
-      btnEdit.disabled = false;
-      cameraViewContainer.style.display = "block";
-      view.getUIElement().style.display = "";
-      await router.startCapturing("detect-document-boundaries");
-    });
-
-    /**
-     * Updates the filter based on user input.
-     */
-    filterVerify.addEventListener("change", () => {
-      if (!filter) return;
-      filter.enableResultCrossVerification(
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD,
-        filterVerify.checked
-      );
-    });
-
-    filterDuplication.addEventListener("change", () => {
-      if (!filter) return;
-      filter.enableResultDeduplication(
-        Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD,
-        filterDuplication.checked
-      );
+      btnEdit.disabled = true;
     });
   </script>
 </body>
