@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231227171713",
-    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231227161611",
-    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231227100017",
-    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231227161641",
+    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231229145519",
+    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231229151441",
+    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231229144501",
     "vue": "^3.2.45"
   },
   "devDependencies": {

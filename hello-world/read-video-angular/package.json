@@ -19,9 +19,9 @@
     "@angular/platform-browser-dynamic": "^15.1.0",
     "@angular/router": "^15.1.0",
     "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231227171713",
-    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231227110709",
-    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231227100017",
-    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231227132111",
+    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231229145519",
+    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231229151441",
+    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231229144501",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"

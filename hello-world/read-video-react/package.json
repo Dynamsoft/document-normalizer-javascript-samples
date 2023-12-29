@@ -5,9 +5,9 @@
   "homepage": "./",
   "dependencies": {
     "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231227171713",
-    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231227110709",
-    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231227100017",
-    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231227110754",
+    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231229145519",
+    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231229151441",
+    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231229144501",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
