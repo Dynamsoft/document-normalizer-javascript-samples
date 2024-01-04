@@ -11,10 +11,10 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20231227171713",
-    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20231229145519",
-    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20231229151441",
-    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20231229144501",
+    "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20240103095540",
+    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20240103180822",
+    "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20240103104926",
+    "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20240103111927",
     "vue": "^3.2.45"
   },
   "devDependencies": {

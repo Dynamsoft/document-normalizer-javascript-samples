@@ -9,15 +9,15 @@
   <meta name="keywords" content="camera based quadrilateral detection and normalization" />
   <title>Detect the boundary of a document and normalize it</title>
   <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-core@3.0.20-dev-20231229144400/dist/core.js"></script>
+    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-core@3.0.20-dev-20240103172308/dist/core.js"></script>
   <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-license@3.0.0-dev-20231229144501/dist/license.js"></script>
+    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-license@3.0.0-dev-20240103111927/dist/license.js"></script>
   <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-document-normalizer@2.0.12-dev-20231229151441/dist/ddn.js"></script>
+    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-document-normalizer@2.0.12-dev-20240103104926/dist/ddn.js"></script>
   <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-capture-vision-router@2.0.20-dev-20231229145519/dist/cvr.js"></script>
+    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-capture-vision-router@2.0.20-dev-20240103180822/dist/cvr.js"></script>
   <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-camera-enhancer@4.0.1-dev-20231227171713/dist/dce.js"></script>
+    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-camera-enhancer@4.0.1-dev-20240103095540/dist/dce.js"></script>
 </head>
 
 <body>
@@ -38,7 +38,6 @@
   <div id="normalized-result"></div>
   <script>
     let quads = [];
-    let view = null;
     let cameraEnhancer = null;
     let router = null;
     let items;
@@ -76,11 +75,12 @@
      * Creates a CameraEnhancer instance and prepares an ImageEditorView instance for later use.
      */
     async function initDCE() {
-      view = await Dynamsoft.DCE.CameraView.createInstance();
+      const view = await Dynamsoft.DCE.CameraView.createInstance();
       cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(view);
       imageEditorView = await Dynamsoft.DCE.ImageEditorView.createInstance(imageEditorViewContainer);
       /* Creates an image editing layer for drawing found document boundaries. */
       layer = imageEditorView.createDrawingLayer();
+      cameraViewContainer.append(view.getUIElement());
     }
 
     /**
@@ -99,7 +99,6 @@
       let newSettings = await router.getSimplifiedSettings("DetectDocumentBoundaries_Default");
       newSettings.capturedResultItemTypes = Dynamsoft.Core.EnumCapturedResultItemType.CRIT_DETECTED_QUAD | Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
       await router.updateSettings("DetectDocumentBoundaries_Default", newSettings);
-      cameraViewContainer.append(view.getUIElement());
 
       /* Defines the result receiver for the task.*/
       const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
