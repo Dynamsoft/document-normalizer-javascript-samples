@@ -43,8 +43,8 @@ onMounted(async () => {
          * include both the quadrilateral and original image data.
          */
         let newSettings = await normalizer.getSimplifiedSettings("DetectDocumentBoundaries_Default");
-        newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-        await normalizer.updateSettings("DetectDocumentBoundaries_Default", newSettings!);
+        newSettings.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+        await normalizer.updateSettings("DetectDocumentBoundaries_Default", newSettings);
         cameraViewContainerRef.value!.append(view.getUIElement());
 
         /* Defines the result receiver for the task.*/
@@ -112,10 +112,10 @@ onMounted(async () => {
              * Sets the coordinates of the ROI (region of interest)
              * in the built-in template "normalize-document".
              */
-            let ss = await normalizer.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
-            ss.roiMeasuredInPercentage = false;
-            ss.roi.points = quad.points;
-            await normalizer.updateSettings("normalize-document", ss);
+            let newSettings = await normalizer.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
+            newSettings.roiMeasuredInPercentage = false;
+            newSettings.roi.points = quad.points;
+            await normalizer.updateSettings("normalize-document", newSettings);
             /* Executes the normalization and shows the result on the page */
             let normalizeResult = await normalizer.capture(image, "normalize-document");
             if (normalizeResult.items[0]) {
