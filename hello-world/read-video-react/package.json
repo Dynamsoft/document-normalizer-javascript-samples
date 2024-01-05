@@ -1,11 +1,11 @@
 {
-  "name": "cvrjs-react-sample",
+  "name": "ddnjs-react-sample",
   "version": "0.0.0",
   "private": true,
   "homepage": "./",
   "dependencies": {
     "@dynamsoft/dynamsoft-camera-enhancer": "^4.0.1-dev-20240103095540",
-    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.20-dev-20240103180822",
+    "@dynamsoft/dynamsoft-capture-vision-router": "^2.0.30-dev-20240105152725",
     "@dynamsoft/dynamsoft-document-normalizer": "^2.0.12-dev-20240103104926",
     "@dynamsoft/dynamsoft-license": "^3.0.0-dev-20240103111927",
     "@testing-library/jest-dom": "^5.16.5",
