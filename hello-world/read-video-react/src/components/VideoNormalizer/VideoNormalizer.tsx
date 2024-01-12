@@ -80,8 +80,8 @@ function VideoNormalizer() {
         init();
 
         return async () => {
-            (await router.current)!.dispose();
-            (await cameraEnhancer.current)!.dispose();
+            (await router.current)?.dispose();
+            (await cameraEnhancer.current)?.dispose();
             console.log('VideoNormalizer Component Unmount');
         }
     }, []);

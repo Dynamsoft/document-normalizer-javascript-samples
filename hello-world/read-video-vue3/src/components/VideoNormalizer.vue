@@ -147,8 +147,8 @@ onMounted(async () => {
 })
 
 onUnmounted(async () => {
-    (await router.value)!.dispose();
-    (await cameraEnhancer.value)!.dispose();
+    (await router.value)?.dispose();
+    (await cameraEnhancer.value)?.dispose();
     console.log('VideoNormalizer Component Unmount');
 })
 </script>

@@ -12,7 +12,7 @@ onMounted(() => {
 })
 
 onUnmounted(async () => {
-    (await router.value)!.dispose();
+    (await router.value)?.dispose();
     console.log('ImageNormalizer Component Unmount');
 })
 

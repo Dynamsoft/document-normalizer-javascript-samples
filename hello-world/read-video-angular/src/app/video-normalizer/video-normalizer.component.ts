@@ -154,8 +154,8 @@ export class VideoNormalizerComponent {
   }
 
   async ngOnDestroy() {
-    (await this.router)!.dispose();
-    (await this.cameraEnhancer)!.dispose();
+    (await this.router)?.dispose();
+    (await this.cameraEnhancer)?.dispose();
     console.log('VideoNormalizer Component Unmount');
   }
 }

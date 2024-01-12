@@ -12,7 +12,7 @@ function ImageNormalizer() {
         router.current = CaptureVisionRouter.createInstance();
 
         return async () => {
-            (await router.current)!.dispose();
+            (await router.current)?.dispose();
             console.log('ImageNormalizer Component Unmount');
         }
     }, []);
