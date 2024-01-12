@@ -8,16 +8,11 @@
     content="Quickly detect document boundaries from a live camera stream and crop the document out before normalizing it further through perspective correction, deskewing, and more." />
   <meta name="keywords" content="camera based quadrilateral detection and normalization" />
   <title>Detect the boundary of a document and normalize it</title>
-  <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-core@3.0.20-dev-20240105150503/dist/core.js"></script>
-  <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-license@3.0.0-dev-20240103111927/dist/license.js"></script>
-  <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-document-normalizer@2.0.12-dev-20240103104926/dist/ddn.js"></script>
-  <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-capture-vision-router@2.0.30-dev-20240105152725/dist/cvr.js"></script>
-  <script
-    src="https://npm.scannerproxy.com/cdn/@dynamsoft/dynamsoft-camera-enhancer@4.0.1-dev-20240103095540/dist/dce.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-core@3.0.30/dist/core.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-license@3.0.20/dist/license.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@2.0.20/dist/ddn.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.0.30/dist/cvr.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@4.0.1/dist/dce.js"></script>
 </head>
 
 <body>
@@ -32,7 +27,8 @@
   </button>
   <button id="confirm-quad-for-normalization">Confirm the Boundary</button>
   <button id="normalize-with-confirmed-quad" disabled>Normalize</button><br />
-  <input type="checkbox" style="vertical-align: middle" id="auto-normalize" /><label style="vertical-align: middle" for="auto-normalize">Normalize Automatically</label>
+  <input type="checkbox" style="vertical-align: middle" id="auto-normalize" /><label style="vertical-align: middle"
+    for="auto-normalize">Normalize Automatically</label>
   <div id="div-ui-container" style="margin-top: 10px; height: 450px"></div>
   <div id="div-image-container" style="display: none; width: 100%; height: 70vh"></div>
   <div id="normalized-result"></div>

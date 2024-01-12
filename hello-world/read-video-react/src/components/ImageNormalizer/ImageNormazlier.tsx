@@ -1,6 +1,6 @@
 import { useEffect, useRef, MutableRefObject, ChangeEvent } from "react";
-import { CaptureVisionRouter } from "@dynamsoft/dynamsoft-capture-vision-router";
-import { NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
+import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
+import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import "./ImageNormalizer.css";
 
 function ImageNormalizer() {

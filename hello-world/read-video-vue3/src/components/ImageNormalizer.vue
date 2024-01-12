@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
-import { CaptureVisionRouter } from "@dynamsoft/dynamsoft-capture-vision-router";
+import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
 
 const iptRef: Ref<HTMLInputElement | null> = ref(null);

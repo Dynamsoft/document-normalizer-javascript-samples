@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-import { EnumCapturedResultItemType, type DSImageData, type OriginalImageResultItem, type Point } from "@dynamsoft/dynamsoft-core";
-import { type NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
+import { EnumCapturedResultItemType, type DSImageData, type OriginalImageResultItem, type Point } from "dynamsoft-core";
+import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 
 let imageEditorViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
 let cameraViewContainerRef: Ref<HTMLDivElement | null> = ref(null);

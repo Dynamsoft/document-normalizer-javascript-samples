@@ -1,9 +1,9 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
-import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "@dynamsoft/dynamsoft-core";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
-import { NormalizedImageResultItem } from '@dynamsoft/dynamsoft-document-normalizer';
+import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "dynamsoft-core";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
+import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 
 function VideoNormalizer() {
     let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);

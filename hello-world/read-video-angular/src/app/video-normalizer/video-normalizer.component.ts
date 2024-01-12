@@ -1,9 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
-import { type NormalizedImageResultItem } from "@dynamsoft/dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "@dynamsoft/dynamsoft-camera-enhancer";
-import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "@dynamsoft/dynamsoft-capture-vision-router";
-import { CapturedResultItem, OriginalImageResultItem, Point } from '@dynamsoft/dynamsoft-core';
+import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
+import { CapturedResultItem, OriginalImageResultItem, Point } from 'dynamsoft-core';
 
 @Component({
   selector: 'app-video-normalizer',
