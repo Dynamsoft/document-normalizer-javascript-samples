@@ -1,10 +1,13 @@
 {
-  "name": "cvrjs-react-sample",
+  "name": "ddnjs-react-sample",
   "version": "0.0.0",
   "private": true,
   "homepage": "./",
   "dependencies": {
-    "dynamsoft-camera-enhancer": "4.0.0",
+    "dynamsoft-camera-enhancer": "^4.0.1",
+    "dynamsoft-capture-vision-router": "^2.0.30",
+    "dynamsoft-document-normalizer": "^2.0.20",
+    "dynamsoft-license": "^3.0.20",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,7 +15,6 @@
     "@types/node": "^16.18.12",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
-    "dynamsoft-capture-vision-router": "^2.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

@@ -12,7 +12,7 @@ onMounted(() => {
 })
 
 onUnmounted(async () => {
-    (await router.value)!.dispose();
+    (await router.value)?.dispose();
     console.log('ImageNormalizer Component Unmount');
 })
 
@@ -20,7 +20,7 @@ const captureImg = async (e: any) => {
     try {
         elInr.value!.innerHTML = "";
         const normalizer = await router.value;
-        const results = await normalizer!.capture(e.target.files[0], "detect-and-normalize-document");
+        const results = await normalizer!.capture(e.target.files[0], "DetectAndNormalizeDocument_Default");
         if(results.items.length) {
             const cvs = (results.items[0] as NormalizedImageResultItem).toCanvas();
             if (document.body.clientWidth < 600) {

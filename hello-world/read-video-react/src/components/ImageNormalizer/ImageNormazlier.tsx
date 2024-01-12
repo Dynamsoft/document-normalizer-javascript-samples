@@ -1,6 +1,6 @@
 import { useEffect, useRef, MutableRefObject, ChangeEvent } from "react";
-import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
+import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 import "./ImageNormalizer.css";
 
 function ImageNormalizer() {
@@ -12,7 +12,7 @@ function ImageNormalizer() {
         router.current = CaptureVisionRouter.createInstance();
 
         return async () => {
-            (await router.current)!.dispose();
+            (await router.current)?.dispose();
             console.log('ImageNormalizer Component Unmount');
         }
     }, []);
@@ -21,7 +21,7 @@ function ImageNormalizer() {
         try {
             elInr.current!.innerHTML = "";
             const normalizer = await router.current;
-            const results = await normalizer!.capture(e.target.files![0], "detect-and-normalize-document");
+            const results = await normalizer!.capture(e.target.files![0], "DetectAndNormalizeDocument_Default");
             if (results.items.length) {
                 const cvs = (results.items[0] as NormalizedImageResultItem).toCanvas();
                 if (document.body.clientWidth < 600) {

@@ -1,10 +1,9 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
-import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
-import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
+import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "dynamsoft-core";
 import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
-import DrawingLayer from 'dynamsoft-camera-enhancer/dist/types/class/drawinglayer';
+import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 
 function VideoNormalizer() {
     let imageEditorViewContainerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -21,7 +20,7 @@ function VideoNormalizer() {
     let normalizer: MutableRefObject<CaptureVisionRouter | null> = useRef(null);
     let dce: MutableRefObject<CameraEnhancer | null> = useRef(null);
     let imageEditorView: MutableRefObject<ImageEditorView | null> = useRef(null);
-    let layer: MutableRefObject<DrawingLayer | null> = useRef(null);
+    let layer: MutableRefObject<any> = useRef(null);
     let view: MutableRefObject<CameraView | null> = useRef(null);
     let items: MutableRefObject<Array<any>> = useRef([]);
     let image: MutableRefObject<DSImageData | null> = useRef(null);
@@ -47,25 +46,25 @@ function VideoNormalizer() {
                  * Because we need to normalize the original image later, here we set the return result type to
                  * include both the quadrilateral and original image data.
                  */
-                let newSettings = await normalizer.current.getSimplifiedSettings("detect-document-boundaries");
-                newSettings!.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
-                await normalizer.current.updateSettings("detect-document-boundaries", newSettings!);
+                let newSettings = await normalizer.current.getSimplifiedSettings("DetectDocumentBoundaries_Default");
+                newSettings.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+                await normalizer.current.updateSettings("DetectDocumentBoundaries_Default", newSettings);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
                 /* Defines the result receiver for the task.*/
                 const resultReceiver = new CapturedResultReceiver();
-                resultReceiver.onDetectedQuadsReceived = async (result) => {
-                    /* Do something with the result */
-                    items.current = result.quadsResultItems;
-                }
-                resultReceiver.onOriginalImageResultReceived = (result) => {
-                    image.current = result.imageData;
+                resultReceiver.onCapturedResultReceived = (result) => {
+                    const originalImage = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE });
+                    if (originalImage.length) {
+                        image.current = (originalImage[0] as OriginalImageResultItem).imageData;
+                    }
+                    items.current = result.items.filter((item: CapturedResultItem) => { return item.type === EnumCapturedResultItemType.CRIT_DETECTED_QUAD });
                 }
                 normalizer.current.addResultReceiver(resultReceiver);
 
                 await dce.current.open();
-                /* Uses the built-in template "detect-document-boundaries" to start a continuous boundary detection task. */
-                await normalizer.current.startCapturing("detect-document-boundaries");
+                /* Uses the built-in template "DetectDocumentBoundaries_Default" to start a continuous boundary detection task. */
+                await normalizer.current.startCapturing("DetectDocumentBoundaries_Default");
                 setShowLoading(false);
             } catch (ex: any) {
                 let errMsg: string;
@@ -81,14 +80,14 @@ function VideoNormalizer() {
         init();
 
         return async () => {
-            (await router.current)!.dispose();
-            (await cameraEnhancer.current)!.dispose();
+            (await router.current)?.dispose();
+            (await cameraEnhancer.current)?.dispose();
             console.log('VideoNormalizer Component Unmount');
         }
     }, []);
 
     const confirmTheBoundary = () => {
-        if(!dce.current!.isOpen() || !items.current.length) return;
+        if (!dce.current!.isOpen() || !items.current.length) return;
         /* Hides the cameraView and shows the imageEditorView. */
         setShowUiContainer(false);
         setShowImageContainer(true);
@@ -108,11 +107,7 @@ function VideoNormalizer() {
         normalizer.current!.stopCapturing();
     }
 
-    const normalze = async () => {
-        /* Hides the imageEditorView. */
-        setShowImageContainer(false);
-        /* Removes the old normalized image if any. */
-        normalizedImageContainer.current!.innerHTML = "";
+    const normalize = async () => {
         /* Get the selected quadrilateral */
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         let quad;
@@ -121,24 +116,46 @@ function VideoNormalizer() {
         } else {
             quad = items.current[0].location;
         }
+        const isPointOverBoundary = (point: Point) => {
+            if(point.x < 0 || 
+            point.x > image.current!.width || 
+            point.y < 0 ||
+            point.y > image.current!.height) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        /* Check if the points beyond the boundaries of the image. */
+        if (quad.points.some((point: Point) => isPointOverBoundary(point))) {
+            alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
+            return;
+        }
+
+        /* Hides the imageEditorView. */
+        setShowImageContainer(false);
+        /* Removes the old normalized image if any. */
+        normalizedImageContainer.current!.innerHTML = "";
         /**
          * Sets the coordinates of the ROI (region of interest)
          * in the built-in template "normalize-document".
          */
-        let ss = await normalizer.current!.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
-        ss.roiMeasuredInPercentage = false;
-        ss.roi.points = quad.points;
-        await normalizer.current!.updateSettings("normalize-document", ss);
+        let newSettings = await normalizer.current!.getSimplifiedSettings("normalize-document") as SimplifiedCaptureVisionSettings;
+        newSettings.roiMeasuredInPercentage = false;
+        newSettings.roi.points = quad.points;
+        await normalizer.current!.updateSettings("normalize-document", newSettings);
         /* Executes the normalization and shows the result on the page */
         let norRes = await normalizer.current!.capture(image.current!, "normalize-document");
-        normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        if (norRes.items[0]) {
+            normalizedImageContainer.current!.append((norRes.items[0] as NormalizedImageResultItem).toCanvas());
+        }
         layer.current!.clearDrawingItems();
         setDisabledBtnEdit(false);
         setDisabledBtnNor(true);
         /* show video view */
         setShowUiContainer(true);
         view.current!.getUIElement().style.display = "";
-        await normalizer.current!.startCapturing("detect-document-boundaries");
+        await normalizer.current!.startCapturing("DetectDocumentBoundaries_Default");
     }
 
     return (
@@ -146,7 +163,7 @@ function VideoNormalizer() {
             <div id="div-loading" style={{ display: bShowLoading ? "block" : "none" }}>Loading...</div>
             <div id="div-video-btns">
                 <button id="confirm-quad-for-normalization" onClick={confirmTheBoundary} disabled={bDisabledBtnEdit}>Confirm the Boundary</button>
-                <button id="normalize-with-confirmed-quad" onClick={normalze} disabled={bDisabledBtnNor}>Normalize</button>
+                <button id="normalize-with-confirmed-quad" onClick={normalize} disabled={bDisabledBtnNor}>Normalize</button>
             </div >
             <div id="div-ui-container" style={{ display: bShowUiContainer ? "block" : "none", marginTop: "10px", height: "500px" }} ref={cameraViewContainerRef}></div>
             <div id="div-image-container" style={{ display: bShowImageContainer ? "block" : "none", width: "100vw", height: "70vh" }} ref={imageEditorViewContainerRef}>
