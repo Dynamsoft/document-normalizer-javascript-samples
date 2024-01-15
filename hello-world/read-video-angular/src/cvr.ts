@@ -12,7 +12,7 @@ LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
 
 CoreModule.engineResourcePaths = {
   core: "https://cdn.jsdelivr.net/npm/dynamsoft-core@3.0.30/dist/",
-  license: "https://cdn.jsdelivr.net/npm/dynamsoft-license@3.0.20-beta-202401110105/dist/",
+  license: "https://cdn.jsdelivr.net/npm/dynamsoft-license@3.0.20/dist/",
   cvr: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.0.30/dist/",
   ddn: "https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@2.0.20/dist/",
   dce: "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@4.0.1/dist/"
