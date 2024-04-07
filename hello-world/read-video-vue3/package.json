@@ -13,6 +13,7 @@
   "dependencies": {
     "dynamsoft-camera-enhancer": "4.0.1",
     "dynamsoft-capture-vision-router": "2.0.30",
+    "dynamsoft-core": "3.0.30",
     "dynamsoft-document-normalizer": "2.0.21",
     "dynamsoft-license": "3.0.20",
     "vue": "^3.2.45"
