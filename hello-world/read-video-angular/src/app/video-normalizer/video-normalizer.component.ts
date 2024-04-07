@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CameraEnhancer, CameraView, QuadDrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 import { CapturedResultItem, OriginalImageResultItem, Point } from 'dynamsoft-core';
 
@@ -77,7 +77,7 @@ export class VideoNormalizerComponent {
         for (let i = 0; i < this.items.length; i++) {
           if (this.items[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
           const points = this.items[i].location.points;
-          const quad = new DrawingItem.QuadDrawingItem({ points });
+          const quad = new QuadDrawingItem({ points });
           this.quads.push(quad);
           layer.addDrawingItems(this.quads);
         }
@@ -91,7 +91,7 @@ export class VideoNormalizerComponent {
         let seletedItems = imageEditorView.getSelectedDrawingItems();
         let quad;
         if (seletedItems.length) {
-          quad = seletedItems[0].getQuad();
+          quad = (seletedItems[0] as QuadDrawingItem).getQuad();
         } else {
           quad = this.items[0].location;
         }

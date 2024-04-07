@@ -1,7 +1,7 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
 import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "dynamsoft-core";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CameraEnhancer, CameraView, QuadDrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 
@@ -98,7 +98,7 @@ function VideoNormalizer() {
         for (let i = 0; i < items.current.length; i++) {
             if (items.current[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
             const points = items.current[i].location.points;
-            const quad = new DrawingItem.QuadDrawingItem({ points });
+            const quad = new QuadDrawingItem({ points });
             quads.push(quad);
             layer.current!.addDrawingItems(quads);
         }
@@ -112,7 +112,7 @@ function VideoNormalizer() {
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         let quad;
         if (seletedItems.length) {
-            quad = seletedItems[0].getQuad();
+            quad = (seletedItems[0] as QuadDrawingItem).getQuad();
         } else {
             quad = items.current[0].location;
         }

@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import { EnumCapturedResultItemType, type DSImageData, type OriginalImageResultItem, type Point } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CameraEnhancer, CameraView, QuadDrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 
 let imageEditorViewContainerRef: Ref<HTMLDivElement | null> = ref(null);
@@ -70,7 +70,7 @@ onMounted(async () => {
             for (let i = 0; i < items.length; i++) {
                 if (items[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
                 const points = items[i].location.points;
-                const quad = new DrawingItem.QuadDrawingItem({ points });
+                const quad = new QuadDrawingItem({ points });
                 quads.push(quad);
                 layer.addDrawingItems(quads);
             }
@@ -84,7 +84,7 @@ onMounted(async () => {
             let seletedItems = imageEditorView.getSelectedDrawingItems();
             let quad;
             if (seletedItems.length) {
-                quad = seletedItems[0].getQuad();
+                quad = (seletedItems[0] as QuadDrawingItem).getQuad();
             } else {
                 quad = items[0].location;
             }
