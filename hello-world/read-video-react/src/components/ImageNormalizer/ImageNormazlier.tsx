@@ -31,12 +31,7 @@ function ImageNormalizer() {
             }
             console.log(results);
         } catch (ex: any) {
-            let errMsg: string;
-            if (ex.message.includes("network connection error")) {
-                errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
-            } else {
-                errMsg = ex.message || ex;
-            }
+            let errMsg = ex.message || ex;
             console.error(errMsg);
             alert(errMsg);
         }

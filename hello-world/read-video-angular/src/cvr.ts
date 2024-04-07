@@ -24,15 +24,8 @@ CoreModule.engineResourcePaths = {
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense?utm_source=github&architecture=dcv&product=ddn&package=js to get your own trial license good for 30 days.
  * LICENSE ALERT - THE END
  */
-CoreModule.loadWasm(["DDN"]).catch((ex:any) => {
-  let errMsg;
-  if (ex.message?.includes('network connection error')) {
-    errMsg =
-      'Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.';
-  } else {
-    errMsg = ex.message || ex;
-  }
+CoreModule.loadWasm(["DDN"]).catch((ex: any) => {
+  let errMsg = ex.message || ex;
   console.error(errMsg);
   alert(errMsg);
 });
-;

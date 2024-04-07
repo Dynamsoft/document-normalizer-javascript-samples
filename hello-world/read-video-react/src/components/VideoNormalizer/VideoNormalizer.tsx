@@ -47,7 +47,7 @@ function VideoNormalizer() {
                  * include both the quadrilateral and original image data.
                  */
                 let newSettings = await normalizer.current.getSimplifiedSettings("DetectDocumentBoundaries_Default");
-                newSettings.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+                newSettings.capturedResultItemTypes |= EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
                 await normalizer.current.updateSettings("DetectDocumentBoundaries_Default", newSettings);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
@@ -67,12 +67,7 @@ function VideoNormalizer() {
                 await normalizer.current.startCapturing("DetectDocumentBoundaries_Default");
                 setShowLoading(false);
             } catch (ex: any) {
-                let errMsg: string;
-                if (ex.message.includes("network connection error")) {
-                    errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
-                } else {
-                    errMsg = ex.message || ex;
-                }
+                let errMsg = ex.message || ex;
                 console.error(errMsg);
                 alert(errMsg);
             }
