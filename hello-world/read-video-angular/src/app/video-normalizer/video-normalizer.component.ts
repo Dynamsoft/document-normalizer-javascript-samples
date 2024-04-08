@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { EnumCapturedResultItemType, type DSImageData } from "dynamsoft-core";
 import { type NormalizedImageResultItem } from "dynamsoft-document-normalizer";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CameraEnhancer, CameraView, QuadDrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 import { CapturedResultItem, OriginalImageResultItem, Point } from 'dynamsoft-core';
 
@@ -49,7 +49,7 @@ export class VideoNormalizerComponent {
       * include both the quadrilateral and original image data.
       */
       let newSettings = await normalizer.getSimplifiedSettings("DetectDocumentBoundaries_Default");
-      newSettings.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+      newSettings.capturedResultItemTypes |= EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
       await normalizer.updateSettings("DetectDocumentBoundaries_Default", newSettings);
       this.cameraViewContainerRef.nativeElement!.append(view.getUIElement());
       this.imageEditorViewContainerRef.nativeElement!.append(imageEditorView.getUIElement());
@@ -77,7 +77,7 @@ export class VideoNormalizerComponent {
         for (let i = 0; i < this.items.length; i++) {
           if (this.items[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
           const points = this.items[i].location.points;
-          const quad = new DrawingItem.QuadDrawingItem({ points });
+          const quad = new QuadDrawingItem({ points });
           this.quads.push(quad);
           layer.addDrawingItems(this.quads);
         }
@@ -91,7 +91,7 @@ export class VideoNormalizerComponent {
         let seletedItems = imageEditorView.getSelectedDrawingItems();
         let quad;
         if (seletedItems.length) {
-          quad = seletedItems[0].getQuad();
+          quad = (seletedItems[0] as QuadDrawingItem).getQuad();
         } else {
           quad = this.items[0].location;
         }
@@ -142,12 +142,7 @@ export class VideoNormalizerComponent {
       await normalizer.startCapturing("DetectDocumentBoundaries_Default");
       this.bShowLoading = false;
     } catch (ex: any) {
-      let errMsg: string;
-      if (ex.message.includes("network connection error")) {
-        errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
-      } else {
-        errMsg = ex.message || ex;
-      }
+      let errMsg = ex.message || ex;
       console.error(errMsg);
       alert(errMsg);
     }

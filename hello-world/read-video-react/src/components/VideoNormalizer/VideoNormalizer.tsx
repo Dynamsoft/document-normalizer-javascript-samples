@@ -1,7 +1,7 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 import "./VideoNormalizer.css";
 import { EnumCapturedResultItemType, DSImageData, OriginalImageResultItem, CapturedResultItem, Point } from "dynamsoft-core";
-import { CameraEnhancer, CameraView, DrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
+import { CameraEnhancer, CameraView, QuadDrawingItem, ImageEditorView } from "dynamsoft-camera-enhancer";
 import { CapturedResultReceiver, CaptureVisionRouter, type SimplifiedCaptureVisionSettings } from "dynamsoft-capture-vision-router";
 import { NormalizedImageResultItem } from "dynamsoft-document-normalizer";
 
@@ -47,7 +47,7 @@ function VideoNormalizer() {
                  * include both the quadrilateral and original image data.
                  */
                 let newSettings = await normalizer.current.getSimplifiedSettings("DetectDocumentBoundaries_Default");
-                newSettings.capturedResultItemTypes = EnumCapturedResultItemType.CRIT_DETECTED_QUAD | EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
+                newSettings.capturedResultItemTypes |= EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE;
                 await normalizer.current.updateSettings("DetectDocumentBoundaries_Default", newSettings);
                 cameraViewContainerRef.current!.append(view.current.getUIElement());
 
@@ -67,12 +67,7 @@ function VideoNormalizer() {
                 await normalizer.current.startCapturing("DetectDocumentBoundaries_Default");
                 setShowLoading(false);
             } catch (ex: any) {
-                let errMsg: string;
-                if (ex.message.includes("network connection error")) {
-                    errMsg = "Failed to connect to Dynamsoft License Server: network connection error. Check your Internet connection or contact Dynamsoft Support (support@dynamsoft.com) to acquire an offline license.";
-                } else {
-                    errMsg = ex.message || ex;
-                }
+                let errMsg = ex.message || ex;
                 console.error(errMsg);
                 alert(errMsg);
             }
@@ -98,7 +93,7 @@ function VideoNormalizer() {
         for (let i = 0; i < items.current.length; i++) {
             if (items.current[i].type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
             const points = items.current[i].location.points;
-            const quad = new DrawingItem.QuadDrawingItem({ points });
+            const quad = new QuadDrawingItem({ points });
             quads.push(quad);
             layer.current!.addDrawingItems(quads);
         }
@@ -112,7 +107,7 @@ function VideoNormalizer() {
         let seletedItems = imageEditorView.current!.getSelectedDrawingItems();
         let quad;
         if (seletedItems.length) {
-            quad = seletedItems[0].getQuad();
+            quad = (seletedItems[0] as QuadDrawingItem).getQuad();
         } else {
             quad = items.current[0].location;
         }
