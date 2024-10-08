@@ -186,6 +186,17 @@
       btnNormalize.style.display = autoNormalize.checked ? "none" : "inline";
     });
 
+    const isPointOverBoundary = (point) => {
+      if (point.x < 0 ||
+        point.x > originalImageData.width ||
+        point.y < 0 ||
+        point.y > originalImageData.height) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     btnEdit.addEventListener("click", async () => {
       if (!cameraEnhancer.isOpen() || items.length <= 1) return;
       /* Stops the detection task since we assume we have found a good boundary. */
@@ -201,6 +212,15 @@
         if (items[i].type === Dynamsoft.Core.EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE) continue;
         const points = items[i].location.points;
         const quad = new Dynamsoft.DCE.QuadDrawingItem({ points });
+        let _currentQuad;
+        quad.on("mousedown", () => {
+          _currentQuad = quad.getQuad();
+        })
+        quad.on("mouseup", () => {
+          if (quad.getQuad().points.some(point => isPointOverBoundary(point))) {
+            quad.setQuad(_currentQuad);
+          }
+        });
         quads.push(quad);
         layer.addDrawingItems(quads);
       }
@@ -219,16 +239,6 @@
       } else {
         quad = items[1].location;
       }
-      const isPointOverBoundary = (point) => {
-        if (point.x < 0 ||
-          point.x > originalImageData.width ||
-          point.y < 0 ||
-          point.y > originalImageData.height) {
-          return true;
-        } else {
-          return false;
-        }
-      };
       /* Check if the points beyond the boundaries of the image. */
       if (quad.points.some(point => isPointOverBoundary(point))) {
         alert("The document boundaries extend beyond the boundaries of the image and cannot be used to normalize the document.");
